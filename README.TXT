@@ -27,4 +27,5 @@ CREATING BRANCHES IS IMPORTANT, TO NOT CONFLICT EASILY WHEN PULLING). To push:
     git push origin BRANCH_NAME_TO_PUSH
 
 A note: 'origin' refers to the remote repository, which you should be able to access
-through GitHub, and allows others to then pull the changes made.
+through GitHub, and allows others to then pull the changes made. The branch name
+BRANCH_NAME_TO_PUSH could be 'main' as well.
