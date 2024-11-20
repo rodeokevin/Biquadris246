@@ -2,23 +2,23 @@
 #include <iostream>
 using namespace std;
 
-TextObserver::TextObserver(Board *board1, Board *board2):board1{board1},board2{board2}{}
+TextObserver::TextObserver(Game *game):game{game}{}
 
 void TextObserver::notify() {
     // Header
-    out << "Level:    " << board1->level << "     "
-        << "Level:    " << board2->level << endl;
-    out << "Score:    " << board1->score << "     "
-        << "Score:    " << board2->score << endl;
+    out << "Level:    " << game->getLevel(1) << "     "
+        << "Level:    " << game->getLevel(2) << endl;
+    out << "Score:    " << game->getScore(1) << "     "
+        << "Score:    " << game->getScore(2) << endl;
     out << "-----------     -----------" << endl;
     // Body (the board) [TODO: optimize how we output? if it is Player1's turn, don't loop Player 2's board]
     for (int i = 0; i < 15; ++i) {
         for (int j = 0; j < 11; ++j) {
-            cout << board1->getState(i,j);
+            cout << game->getState(1, i, j); // State of p1
         }
         cout << "     ";
         for (int j = 0; j < 11; ++j) {
-            cout << board2->getState(i,j);
+            cout << game->getState(2, i, j); // State of p2
         }
         out << endl;
     }

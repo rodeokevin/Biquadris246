@@ -3,14 +3,17 @@
 #include "observer.h"
 #include "textObserver.h"
 #include "tile.h"
+#include "game.h"
+
 #include <iostream>
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    Board *board1 = new Board(0);
-    Board *board2 = new Board(1);
+    Board *board1 = new Board();
+    Board *board2 = new Board();
+    Game *game = new Game(0, 1, board1, board2);
     std::vector<Observer*> observers; // Keep a vector of Observer pointers to be deleted at the end
-    TextObserver *textObserver1 = new TextObserver(board1, board2);
-    board1->attach(textObserver1);
-    board1->notifyObservers();
+    TextObserver *textObserver = new TextObserver(game);
+    game->attach(textObserver);
+    game->notifyObservers();
 }
