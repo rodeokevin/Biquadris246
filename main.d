@@ -1,1 +1,1 @@
-main.o: main.cc block.h board.h tile.h observer.h textObserver.h game.h
+main.o: main.cc block.h tile.h board.h observer.h textObserver.h game.h

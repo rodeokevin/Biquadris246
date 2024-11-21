@@ -1,1 +1,1 @@
-board.o: board.cc board.h tile.h
+board.o: board.cc board.h tile.h block.h
