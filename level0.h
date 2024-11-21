@@ -13,7 +13,7 @@ class Level0: public Level {
     char readLine(std::ifstream& f);
 
     public:
-        Level0(std::string s1, std::string s2);
+        Level0(const int l, std::string s1, std::string s2);
         char produceBlock(int player) override;
         ~Level0() override;
 };

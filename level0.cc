@@ -1,6 +1,6 @@
 #include "level0.h"
 
-Level0::Level0(std::string s1, std::string s2): seq1{s1}, seq2{s2}, f1{seq1}, f2{seq2} { level = 0; }
+Level0::Level0(const int l, std::string s1, std::string s2): Level{l}, seq1{s1}, seq2{s2}, f1{seq1}, f2{seq2} { level = 0; }
 
 char Level0::readLine(std::ifstream& f) {
     char c;

@@ -6,6 +6,7 @@ class Level {
         int level;
 
     public:
+        Level(int l);
         virtual ~Level();
         virtual char produceBlock(int player) = 0;
         int getLevel();

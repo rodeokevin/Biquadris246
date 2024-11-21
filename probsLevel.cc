@@ -1,5 +1,33 @@
 #include "probsLevel.h"
-#include <cstdlib>
+
+ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
+    Level{l}, probs(NUM_BLOCKS, 0), noRand{false} {
+    int OTHER_BLOCKS = NUM_BLOCKS;
+    float leftover = total;
+
+    for (long unsigned int i = 0; i < p.size(); ++i) {
+        probs[i] = p[i];
+        // decrementing the probabilities of obtaining any of the blocks for
+        // which we did not assign a probability, could be 0 in the case where
+        // each block was assigned a probability
+        leftover -= p[i];
+
+        if (p[i] != 0) --OTHER_BLOCKS;
+    }
+
+    // if we have at least 1 block for which we do not have a given probability,
+    // then we must partition the rest of the chances amongst the rest of the
+    // blocks
+    if (OTHER_BLOCKS > 0) {
+        float otherP = leftover / OTHER_BLOCKS;
+
+        // we assign the probability to any of the blocks without a given
+        // probability
+        for (long unsigned int i = 0; i < p.size(); ++i) {
+            if (p[i] == 0) probs[i] = otherP;
+        }
+    }
+}
 
 void ProbsLevel::setNoRand(std::string sequence) {
     noRand = true;
