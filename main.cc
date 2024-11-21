@@ -6,6 +6,7 @@
 #include "game.h"
 
 #include <iostream>
+#include <string>
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -15,11 +16,16 @@ int main(int argc, char* argv[]) {
     std::vector<Observer*> observers; // Keep a vector of Observer pointers to be deleted at the end
     TextObserver *textObserver = new TextObserver(game);
     game->attach(textObserver);
-    // OBlock *testOBlock = new OBlock('?');
+    // OBlock *testOBlock = new OBlock();
     // board1->placeBlock(testOBlock);
-    IBlock *testIBlock = new IBlock('&');
-    testIBlock->rotateBlock();
-    testIBlock->rotateBlock();
-    board1->placeBlock(testIBlock);
+    SBlock *testSBlock = new SBlock();
+    board1->placeBlock(testSBlock);
+    board1->rotateBlock(testSBlock, "CW");
+    game->notifyObservers();
+    //board1->moveBlock(testSBlock, "d");
+    //board1->moveBlock(testSBlock, "r");
+    //board1->moveBlock(testSBlock, "d");
+    //board1->moveBlock(testSBlock, "r");
+    board1->rotateBlock(testSBlock, "CW");
     game->notifyObservers();
 }
