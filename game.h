@@ -24,7 +24,7 @@ class Subject {
 class Game : public Subject {
     int p1Level, p2Level, p1Score, p2Score;
     int currentPlayer;
-    Board *boards[2];
+    Board *board1, *board2;
 
    public:
     Game(int p1Level, int p2Level, int currentPlayer, Board *board1, Board *board2);  // Ctor
@@ -34,6 +34,7 @@ class Game : public Subject {
     int getScore(int p);
 
     int getPlayerTurn();
+    Board *getBoard();
 
     char getState(int board, int row, int col) const override;
 

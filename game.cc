@@ -27,11 +27,12 @@ void Game::switchPlayerTurn() {
     currentPlayer = currentPlayer == 0 ? 1 : 0;
 }
 
-Game::Game(int p1Level, int p2Level, int currentPlayer, Board* board1, Board* board2)
-    : p1Level{p1Level}, p2Level{p2Level}, currentPlayer{currentPlayer} {
-    boards[0] = board1;
-    boards[1] = board2;
+Board* Game::getBoard() {
+    return currentPlayer == 0 ? board1 : board2;
 }
+
+Game::Game(int p1Level, int p2Level, int currentPlayer, Board* board1, Board* board2)
+    : p1Level{p1Level}, p2Level{p2Level}, currentPlayer{currentPlayer}, board1{board1}, board2{board2} {}
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector
