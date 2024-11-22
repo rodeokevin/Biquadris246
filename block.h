@@ -12,70 +12,80 @@ class Block {
   protected:
     // Tile that forms the Blcok
     Tile blockTile;
+    // 0 is Horizontal, 1 is Vertical
+    int state = 0; // starts Horizontal
     // Vector of pairs to store the relative coords of the Tiles forming the Block
     std::vector<std::pair<int, int>> coords;
+    // Keep track of the following corners to adjust the rotations
+    std::pair<int, int> bottomLeft;
+    std::pair<int, int> bottomRight;
+    std::pair<int, int> topLeft;
+    std::pair<int, int> topRight;
   public:
-    virtual std::vector<std::pair<int, int>> getCoords() const = 0;
-    virtual ~Block() = default;
-    virtual Tile getBlockTile() const;
+    std::vector<std::pair<int, int>> getCoords() const;
+    virtual ~Block() = 0; // To make class abstract
+    Tile getBlockTile() const;
 
     // Get the new coords when rotating (give "CW" or "CCW")
-    virtual std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const = 0;
+    virtual std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const;
     // Actually rotate the block
-    virtual void rotate(string dir) = 0;
+    void rotate(string dir);
 
     // Get the new coords when moving (give "l", "r", or "d")
-    virtual std::vector<std::pair<int, int>> computeMovedCoords(string dir) const = 0;
+    std::vector<std::pair<int, int>> computeMovedCoords(string dir) const;
     // Actually move the block
-    virtual void move(string dir) = 0;
-   
+    void move(string dir);
 };
 
 // OBlock
 class OBlock : public Block {
-public:
+  public:
     OBlock();
-    std::vector<std::pair<int, int>> getCoords() const override;
+    ~OBlock() override = default;
+    // Override because rotation on OBlock does nothing
     std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
-    void rotate(string dir) override;
-    std::vector<std::pair<int, int>> computeMovedCoords(string dir) const override;
-    void move(string dir) override;
 };
 
 // IBlock
 class IBlock : public Block {
-  int state = 0; // Todo: define what the 0 state is (it will be the flat state, and 1 is the stood up state)
-public:
-  IBlock();
-  std::vector<std::pair<int, int>> getCoords() const override;
-  std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
-  void rotate(string dir) override;
-  std::vector<std::pair<int, int>> computeMovedCoords(string dir) const override;
-  void move(string dir) override;
+  public:
+    IBlock();
+    ~IBlock() override = default;
 };
 
 // SBlock
 class SBlock : public Block {
-  int state = 0; // Todo: define what the 0 state is (it will be the flat state, and 1 is the stood up state)
-public:
-  SBlock();
-  std::vector<std::pair<int, int>> getCoords() const override;
-  std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
-  void rotate(string dir) override;
-  std::vector<std::pair<int, int>> computeMovedCoords(string dir) const override;
-  void move(string dir) override;
+  public:
+    SBlock();
+    ~SBlock() override = default;
 };
 
 // ZBlock
-// class ZBlock : public Block {
-//  int state = 0; // Todo: define what the 0 state is (it will be the flat state, and 1 is the stood up state)
-//public:
-//  ZBlock();
-//  std::vector<std::pair<int, int>> getCoords() const override;
-//  std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
-//  void rotate(string dir) override;
-//  std::vector<std::pair<int, int>> computeMovedCoords(string dir) const override;
-//  void move(string dir) override;
-//};
+class ZBlock : public Block {
+  public:
+    ZBlock();
+    ~ZBlock() override = default;
+};
+
+// JBlock
+class JBlock : public Block {
+  public:
+    JBlock();
+    ~JBlock() override = default;
+};
+
+// LBlock
+class LBlock : public Block {
+  public:
+    LBlock();
+    ~LBlock() override = default;
+};
+
+// TBlock
+class TBlock : public Block {
+  public:
+    TBlock();
+    ~TBlock() override = default;
+};
 
 #endif

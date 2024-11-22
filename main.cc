@@ -16,16 +16,24 @@ int main(int argc, char* argv[]) {
     std::vector<Observer*> observers; // Keep a vector of Observer pointers to be deleted at the end
     TextObserver *textObserver = new TextObserver(game);
     game->attach(textObserver);
-    // OBlock *testOBlock = new OBlock();
-    // board1->placeBlock(testOBlock);
-    SBlock *testSBlock = new SBlock();
-    board1->placeBlock(testSBlock);
-    board1->rotateBlock(testSBlock, "CW");
+    IBlock *testIBlock = new IBlock();
+    board1->placeBlock(testIBlock);
     game->notifyObservers();
-    //board1->moveBlock(testSBlock, "d");
-    //board1->moveBlock(testSBlock, "r");
-    //board1->moveBlock(testSBlock, "d");
-    //board1->moveBlock(testSBlock, "r");
-    board1->rotateBlock(testSBlock, "CW");
+    board1->moveBlock(testIBlock, "d");
+    board1->moveBlock(testIBlock, "d");
+    board1->moveBlock(testIBlock, "d");
+    board1->moveBlock(testIBlock, "d");
+    board1->moveBlock(testIBlock, "r");
+    board1->moveBlock(testIBlock, "r");
+    board1->moveBlock(testIBlock, "r");
     game->notifyObservers();
+    board1->rotateBlock(testIBlock, "CW");
+    game->notifyObservers();
+    board1->rotateBlock(testIBlock, "CW");
+    game->notifyObservers();
+    board1->rotateBlock(testIBlock, "CW");
+    game->notifyObservers();
+    board1->rotateBlock(testIBlock, "CW");
+    game->notifyObservers();
+    //board1->moveBlock(testIBlock, "d");
 }
