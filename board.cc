@@ -24,9 +24,16 @@ char Board::charAt(int row, int col) const {
     return grid[row][col].getSymbol();
 }
 
+void Board::setNewCurrentBlock(Block *block) {
+    currentBlock = block;
+}
+void Board::setNewNextBlock(Block *block) {
+    nextBlock = block;
+}
+
 // Check whether a Block can be placed at the starting position
-bool Board::tryPlaceBlock(Block *block) {
-    for (const auto& tile : block->getCoords()) {
+bool Board::tryPlaceBlock() {
+    for (const auto& tile : currentBlock->getCoords()) {
         size_t x = tile.first;
         size_t y = tile.second;
         if (x < 0 || x >= grid[0].size() || y < 0 || y >= grid.size()) {
@@ -39,22 +46,22 @@ bool Board::tryPlaceBlock(Block *block) {
     return true; // All Tiles not occupied
 }
 // Place the Block on the Board
-void Board::placeBlock(Block *block) {
-    for (const auto& tile : block->getCoords()) {
-        grid[tile.second][tile.first] = block->getBlockTile(); // Place the new Tile
+void Board::placeBlock() {
+    for (const auto& tile : currentBlock->getCoords()) {
+        grid[tile.second][tile.first] = currentBlock->getBlockTile(); // Place the new Tile
     }
 }
 
 // Remove the Bloack on the Board (does not modify the Block's coordinates)
-void Board::removeBlock(Block *block) {
-    for (const auto& tile : block->getCoords()) {
+void Board::removeBlock() {
+    for (const auto& tile : currentBlock->getCoords()) {
         grid[tile.second][tile.first] = Tile(' '); // Replace with Blank Tile
     }
 }
 
 // Check whether a Block can be rotated
-bool Board::tryRotateBlock(Block *block, string dir) {
-    std::vector<std::pair<int, int>> newCoords = block->computeRotatedCoords(dir); // Obtain the new coords
+bool Board::tryRotateBlock(string dir) {
+    std::vector<std::pair<int, int>> newCoords = currentBlock->computeRotatedCoords(dir); // Obtain the new coords
     for (const auto& tile : newCoords) {
         size_t x = tile.first;
         size_t y = tile.second;
@@ -68,15 +75,15 @@ bool Board::tryRotateBlock(Block *block, string dir) {
     return true; // All Tiles not occupied
 }
 // Rotate the Block
-void Board::rotateBlock(Block *block, string dir) {
-    removeBlock(block);
-    block->rotate(dir);
-    placeBlock(block);
+void Board::rotateBlock(string dir) {
+    removeBlock();
+    currentBlock->rotate(dir);
+    placeBlock();
 }
 
 // Check whether the Block can be moved in specified direction
-bool Board::tryMoveBlock(Block *block, string dir) {
-    std::vector<std::pair<int, int>> newCoords = block->computeMovedCoords(dir); // Obtain the new coords
+bool Board::tryMoveBlock(string dir) {
+    std::vector<std::pair<int, int>> newCoords = currentBlock->computeMovedCoords(dir); // Obtain the new coords
         for (const auto& tile : newCoords) {
             size_t x = tile.first;
             size_t y = tile.second;
@@ -90,8 +97,15 @@ bool Board::tryMoveBlock(Block *block, string dir) {
         return true; // All Tiles not occupied
 }
 // Move the Block
-void Board::moveBlock(Block *block, string dir) {
-    removeBlock(block);
-    block->move(dir);
-    placeBlock(block);
+void Board::moveBlock(string dir) {
+    removeBlock();
+    currentBlock->move(dir);
+    placeBlock();
+}
+
+// Drop the Block
+void Board::dropBlock() {
+    while (tryMoveBlock("d")) {
+        moveBlock("d");
+    }
 }
