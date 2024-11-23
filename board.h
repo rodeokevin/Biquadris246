@@ -11,8 +11,10 @@ class Board {
     Block *currentBlock;
     Block *nextBlock;
     public:
+        friend class Game;
         Board(); // Constructor
         char charAt(int row, int col) const; // Get the char at a specific index
+        Block *getNextBlock();
         
         void setNewCurrentBlock(Block *block); // Set the new currentBlock
         void setNewNextBlock(Block *block); // Set the new nextBlock

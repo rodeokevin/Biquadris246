@@ -30,6 +30,7 @@ class Game : public Subject{
         int getScore(int p);
 
         char getState(int board, int row, int col) const override;
+        Block *getNextBlock(int p);
         
 };
 

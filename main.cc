@@ -17,7 +17,11 @@ int main(int argc, char* argv[]) {
     TextObserver *textObserver = new TextObserver(game);
     game->attach(textObserver);
     IBlock *testIBlock = new IBlock();
+    IBlock *testIBlock2 = new IBlock();
+    OBlock *testOBlock = new OBlock();
     board1->setNewCurrentBlock(testIBlock);
+    board2->setNewNextBlock(testOBlock);
+    board1->setNewNextBlock(testIBlock2);
     board1->placeBlock();
     game->notifyObservers();
     board1->dropBlock();

@@ -24,6 +24,8 @@ char Board::charAt(int row, int col) const {
     return grid[row][col].getSymbol();
 }
 
+Block* Board::getNextBlock() { return nextBlock; }
+
 void Board::setNewCurrentBlock(Block *block) {
     currentBlock = block;
 }
