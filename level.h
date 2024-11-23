@@ -10,6 +10,7 @@ class Level {
         virtual ~Level();
         virtual char produceBlock(int player) = 0;
         int getLevel();
+        virtual void outputProbs();
 };
 
 #endif

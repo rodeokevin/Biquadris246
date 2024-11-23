@@ -39,6 +39,7 @@ class Game : public Subject {
     char getState(int board, int row, int col) const override;
 
     void switchPlayerTurn();
+    Block *getNextBlock(int p);
 };
 
 #endif

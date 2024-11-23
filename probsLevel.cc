@@ -1,4 +1,5 @@
 #include "probsLevel.h"
+#include <iostream>
 
 ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
     Level{l}, probs(NUM_BLOCKS, 0), noRand{false} {
@@ -31,10 +32,10 @@ ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
 
 void ProbsLevel::setNoRand(std::string sequence) {
     noRand = true;
-    seq = sequence;
 
     if (f.is_open()) f.close();
 
+    seq = sequence;
     f.open(seq);
 }
 
@@ -44,7 +45,7 @@ void ProbsLevel::setRand() {
     if (f.is_open()) f.close();
 }
 
-char ProbsLevel::produceBlock() {
+char ProbsLevel::produceBlock(int player) {
     if (noRand) return produceNoRandBlock();
     else return produceRandBlock();
 }
@@ -95,4 +96,11 @@ char ProbsLevel::produceNoRandBlock() {
 
 ProbsLevel::~ProbsLevel() {
     if (f.is_open()) f.close();
+}
+
+void ProbsLevel::outputProbs() {
+    for (int i = 0; i < NUM_BLOCKS; ++i) {
+        std::cout << "Probability for block " << blocks[i] << ": "
+                  << probs[i] << std::endl;
+    }
 }

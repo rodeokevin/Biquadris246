@@ -22,6 +22,7 @@ class Block {
     std::pair<int, int> topLeft;
     std::pair<int, int> topRight;
   public:
+    friend class board;
     std::vector<std::pair<int, int>> getCoords() const;
     virtual ~Block() = 0; // To make class abstract
     Tile getBlockTile() const;
