@@ -26,5 +26,30 @@ void TextObserver::notify() {
     out << "-----------     -----------" << endl;
     out << "Next:      " << "     "
         << "Next:      " << endl;
-    // [TODO: print the next Block (we should write a << function for each Block type)]
+    for (int i = 2; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            bool found = false;
+            // If the following does not find, print " "
+            for (int k = 0; k < 4; ++k) {
+                if (((game->getNextBlock(1))->getCoords())[k].first == j && ((game->getNextBlock(1))->getCoords())[k].second == i) {
+                    out << ((game->getNextBlock(1))->getBlockTile()).getSymbol();
+                    found = true;
+                }
+            }
+            if (!found) out << " ";
+        }
+        out << "            ";
+        for (int j = 0; j < 4; ++j) {
+            bool found = false;
+            // If the following does not find, print " "
+            for (int k = 0; k < 4; ++k) {
+                if (((game->getNextBlock(2))->getCoords())[k].first == j && ((game->getNextBlock(2))->getCoords())[k].second == i) {
+                    out << ((game->getNextBlock(2))->getBlockTile()).getSymbol();
+                    found = true;
+                }
+            }
+            if (!found) out << " ";
+        }
+        out << "       " << endl;
+    }
 }
