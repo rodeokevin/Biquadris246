@@ -11,16 +11,25 @@ char Game::getState(int board, int row, int col) const {
     }
 }
 
-Block* Game::getNextBlock(int p) {
+Block* Game::getNextBlock(int player) {
     return (p == 1) ? board1->nextBlock : board2->nextBlock;
 }
 
-int Game::getLevel(int p) {
-    return (p == 1) ? p1Level : p2Level;
+int Game::getLevel(int player) {
+    return (p == 1) ? p1->getLevel() : p2->getLevel();
 }
 
-int Game::getScore(int p) {
-    return (p == 1) ? p1Score : p2Score;
+int Game::getScore(int player) {
+    return (p == 1) ? p1->getScore() : p2->getScore();
+}
+
+void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
+
+void Game::updateScoreDestroyedBlock(int increase) {
+    if (currentPlayer == 0) p1->updateScore(increase);
+    else p2->updateScore(increase);
+
+    updateHiScore();
 }
 
 int Game::getPlayerTurn() {
@@ -28,15 +37,23 @@ int Game::getPlayerTurn() {
 }
 
 void Game::switchPlayerTurn() {
-    currentPlayer = currentPlayer == 0 ? 1 : 0;
+    currentPlayer = 1 - currentPlayer;
 }
 
 Board* Game::getBoard() {
     return currentPlayer == 0 ? board1 : board2;
 }
 
-Game::Game(int p1Level, int p2Level, int currentPlayer, Board* board1, Board* board2)
-    : p1Level{p1Level}, p2Level{p2Level}, currentPlayer{currentPlayer}, board1{board1}, board2{board2} {}
+Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
+    : textOnly{textOnly}, hiScore{0}, currentPlayer{0} {
+    // setting up the players
+    p1 = std::make_unique<Player>(seq1, startLevel);
+    p2 = std::make_unique<Player>(seq2, startLevel);
+    // setting up the board for each player, though they do not actually have
+    // access to their associated player
+    board1 = std::make_unique<Board>(this);
+    board2 = std::make_unique<Board>(this);
+}
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector

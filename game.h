@@ -6,6 +6,7 @@
 #include "board.h"
 #include "observer.h"
 #include "tile.h"
+#include "player.h"
 
 class Observer;  // forward declaration
 
@@ -30,15 +31,18 @@ class Game : public Subject {
     std::unique_ptr<Player> p1, p2;
     std::unique_ptr<Board> board1, board2;
 
+    void updateHiScore();
+
    public:
     Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor
 
     // Accessors (and settors?)
-    int getLevel(int p);
-    int getScore(int p);
+    int getLevel(int player) const;
+    int getScore(int player) const;
+    int updateScoreDestroyedBlock(int increase);
 
-    int getPlayerTurn();
-    Board *getBoard();
+    int getPlayerTurn() const;
+    Board *getBoard() const;
 
     char getState(int board, int row, int col) const override;
 

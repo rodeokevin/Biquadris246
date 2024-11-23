@@ -45,7 +45,7 @@ void ProbsLevel::setRand() {
     if (f.is_open()) f.close();
 }
 
-char ProbsLevel::produceBlock(int player) {
+char ProbsLevel::produceBlock() {
     if (noRand) return produceNoRandBlock();
     else return produceRandBlock();
 }
