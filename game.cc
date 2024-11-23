@@ -1,12 +1,12 @@
 #include "game.h"
+
 #include "board.h"
 
 // Get the state of one of the Boards
 char Game::getState(int board, int row, int col) const {
     if (board == 1) {
         return board1->charAt(row, col);
-    }
-    else {
+    } else {
         return board2->charAt(row, col);
     }
 }
@@ -23,15 +23,27 @@ int Game::getScore(int p) {
     return (p == 1) ? p1Score : p2Score;
 }
 
-Game::Game(int p1Level, int p2Level, Board *board1, Board *board2)
-    :p1Level{p1Level},p2Level{p2Level},board1{board1},board2{board2}{}
+int Game::getPlayerTurn() {
+    return currentPlayer;
+}
 
-void Subject::attach( Observer* o ) {
+void Game::switchPlayerTurn() {
+    currentPlayer = currentPlayer == 0 ? 1 : 0;
+}
+
+Board* Game::getBoard() {
+    return currentPlayer == 0 ? board1 : board2;
+}
+
+Game::Game(int p1Level, int p2Level, int currentPlayer, Board* board1, Board* board2)
+    : p1Level{p1Level}, p2Level{p2Level}, currentPlayer{currentPlayer}, board1{board1}, board2{board2} {}
+
+void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector
     observers.push_back(o);
 }
 
-void Subject::detach( Observer* o ) {
+void Subject::detach(Observer* o) {
     // Find the observer and erase it (it does nothing if not found)
     for (auto it = observers.begin(); it != observers.end(); ++it) {
         if (*it == o) {
