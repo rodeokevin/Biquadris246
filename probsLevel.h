@@ -24,10 +24,11 @@ class ProbsLevel: public Level {
         ProbsLevel(const int l, const std::vector<float> p);
         void setNoRand(std::string sequence = "");
         void setRand();
-        char produceBlock();
+        char produceBlock(int player) override;
         char produceRandBlock();
         char produceNoRandBlock();
         ~ProbsLevel();
+        void outputProbs() override;
 };
 
 #endif
