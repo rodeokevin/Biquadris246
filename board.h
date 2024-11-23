@@ -10,6 +10,9 @@ class Board {
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
     Block *currentBlock;
     Block *nextBlock;
+
+    bool tryMoveBlock(string dir); // Check if a Block can move (dir is "l", "r" or "d")
+    bool tryRotateBlock(string dir); // Check if a Block can rotate (dir is either "CW" or "CCW")
     public:
         friend class Game;
         Board(); // Constructor
@@ -23,13 +26,16 @@ class Board {
         void placeBlock();
         void removeBlock(); // Remove the Block from the Board
 
-        bool tryRotateBlock(string dir); // Check if a Block can rotate (dir is either "CW" or "CCW")
         void rotateBlock(string dir); // Rotate the block
-
-        bool tryMoveBlock(string dir); //check if a Block can move (dir is "l", "r" or "d")
+        
         void moveBlock(string dir);
 
         void dropBlock();
+
+        // [TODO]
+        int clearFullRows(); // Clears full rows from the board and returns the number of cleared rows
+        // [TODO]
+        void shiftDown(int i); //Shifts all blocks in rows above and including i downards by 1
 };
 
 #endif

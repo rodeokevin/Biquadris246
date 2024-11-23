@@ -71,38 +71,60 @@ bool Board::tryRotateBlock(string dir) {
             return false; // Invalid position on the board
         }
         if (grid[y][x].getIsOccupied()) {
-            return false; // Tile already occupied
+            // Check if the occupied tile was itself
+            bool isItself = false;
+            for (const auto &oldTile : currentBlock->getCoords()) {
+                if (tile == oldTile) {
+                    isItself = true;
+                }
+            }
+            if (!isItself) {
+                return false; // Tile already occupied
+            }
         }
     }
     return true; // All Tiles not occupied
 }
 // Rotate the Block
 void Board::rotateBlock(string dir) {
-    removeBlock();
-    currentBlock->rotate(dir);
-    placeBlock();
+    if (tryRotateBlock(dir)) {
+        removeBlock();
+        currentBlock->rotate(dir);
+        placeBlock();
+    }
 }
 
 // Check whether the Block can be moved in specified direction
 bool Board::tryMoveBlock(string dir) {
     std::vector<std::pair<int, int>> newCoords = currentBlock->computeMovedCoords(dir); // Obtain the new coords
-        for (const auto& tile : newCoords) {
-            size_t x = tile.first;
-            size_t y = tile.second;
-            if (x < 0 || x >= grid[0].size() || y < 0 || y >= grid.size()) {
-                return false; // Invalid position on the board
+    for (const auto& tile : newCoords) {
+        size_t x = tile.first;
+        size_t y = tile.second;
+        if (x < 0 || x >= grid[0].size() || y < 0 || y >= grid.size()) {
+            return false; // Invalid position on the board
+        }
+        if (grid[y][x].getIsOccupied()) {
+            // Check if the occupied tile was itself
+            bool isItself = false;
+            for (const auto &oldTile : currentBlock->getCoords()) {
+                if (tile == oldTile) {
+                    isItself = true;
+                }
             }
-            if (grid[y][x].getIsOccupied()) {
+            if (!isItself) {
                 return false; // Tile already occupied
             }
         }
-        return true; // All Tiles not occupied
+    }
+    return true; // All Tiles not occupied
 }
-// Move the Block
+// Move the Block (if tryMoveBlock returns true)
 void Board::moveBlock(string dir) {
-    removeBlock();
-    currentBlock->move(dir);
-    placeBlock();
+    if (tryMoveBlock(dir)) {
+        removeBlock();
+        currentBlock->move(dir);
+        placeBlock();
+    }
 }
 
 // Drop the Block
@@ -111,3 +133,25 @@ void Board::dropBlock() {
         moveBlock("d");
     }
 }
+
+// [TODO]
+// Clear any full rows and shift above cells downwards if needed
+int Board::clearFullRows() {
+    for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < 11; ++i) {
+            if (charAt(i,j) != ' ') {
+                
+            }
+            else {
+                continue;
+            }
+        }
+    }
+    return 0;
+}
+
+// [TODO]
+void Board::shiftDown(int i){
+
+}
+

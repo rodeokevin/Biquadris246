@@ -19,11 +19,16 @@ int main(int argc, char* argv[]) {
     IBlock *testIBlock = new IBlock();
     IBlock *testIBlock2 = new IBlock();
     OBlock *testOBlock = new OBlock();
-    board1->setNewCurrentBlock(testIBlock);
+    ZBlock *testZBlock = new ZBlock();
+    board1->setNewCurrentBlock(testZBlock);
     board2->setNewNextBlock(testOBlock);
     board1->setNewNextBlock(testIBlock2);
     board1->placeBlock();
     game->notifyObservers();
+    board1->rotateBlock("CW");
+    board1->dropBlock();
+    board1->setNewCurrentBlock(testIBlock);
+    board1->rotateBlock("CW");
     board1->dropBlock();
     game->notifyObservers();
     // board1->moveBlock(testIBlock, "d");
