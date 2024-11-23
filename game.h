@@ -22,12 +22,16 @@ class Subject {
 };
 
 class Game : public Subject {
-    int p1Level, p2Level, p1Score, p2Score;
+    bool textOnly;
+    int hiScore;
+    // update 'currentPlayer' using: currentPlayer = 1 - currentPlayer, like
+    // taking the NOT of a bit
     int currentPlayer;
-    Board *board1, *board2;
+    std::unique_ptr<Player> p1, p2;
+    std::unique_ptr<Board> board1, board2;
 
    public:
-    Game(int p1Level, int p2Level, int currentPlayer, Board *board1, Board *board2);  // Ctor
+    Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor
 
     // Accessors (and settors?)
     int getLevel(int p);
