@@ -25,6 +25,7 @@ char Game::getState(int board, int row, int col) const {
 
 Block* Game::getNextBlock(int player) {
     return (player == 1) ? board1->nextBlock.get() : board2->nextBlock.get();
+}
 
 int Game::getLevel(int player) const {
     return (player == 1) ? p1->getLevel() : p2->getLevel();
@@ -67,6 +68,8 @@ void Game::restart() {
     board1 = std::make_unique<Board>(this);
     board2 = std::make_unique<Board>(this);
 }
+
+void Game::addPenalty() {}
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector

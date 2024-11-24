@@ -36,6 +36,16 @@ void Player::restart() {
     lvl4LastClearRow = 0;
 }
 
-void Player::turnEnd(bool clearedRow) {
-    
+bool Player::turnEnd(bool clearedRow) {
+    // if we are on Level 4 and
+    if (l->getLevel() >= 4 && clearedRow) lvl4LastClearRow = 0;
+    else if (l->getLevel() >= 4) {
+        ++lvl4LastClearRow;
+
+        // if we must add the penalty block, we return True, otherwise False is
+        // returned
+        if (lvl4LastClearRow % PENALTY_TURNS == 0) return true;
+    }
+
+    return false;
 }

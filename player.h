@@ -7,7 +7,7 @@
 #include <memory>
 
 class Player {
-    const int LOWEST_LVL = 0, HIGHEST_LVL = 4;
+    const int LOWEST_LVL = 0, HIGHEST_LVL = 4, PENALTY_TURNS = 5;
     int score;
     // Counter used for the logic of Level 4, and potentially any levels onward
     // that would inherit the properties from Level 4. It indicates the number of
@@ -41,7 +41,7 @@ class Player {
         // when the 'restart' command is used
         void restart();
         // end of the player's turn
-        void turnEnd(bool clearedRow);
+        bool turnEnd(bool clearedRow);
 };
 
 #endif

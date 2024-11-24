@@ -7,6 +7,7 @@
 #include "block.h"
 
 class Board {
+    const int ROWS = 15, COLS = 11;
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
     std::shared_ptr<Block> currentBlock;
     std::shared_ptr<Block> nextBlock;

@@ -41,9 +41,14 @@ class Game : public Subject {
     // returns TRUE when the turn ended successfully, meaning it is now the next
     // player's turn, and FALSE when EOF is reached
     bool playTurn();
-    void applySpecAct();
+    // methods relating to the special actions, adding them to a Board and
+    // clearing the special actions upon a turn end, as all special actions
+    // currently only last one turn for a player
     void addSpecAct(std::string specAct);
     void clearSpecAct();
+    // method to add the penalty 1-by-1 block for the current player if they
+    // were unable to clear a block within 5 turns when in Level 4
+    void addPenalty();
 
    public:
     Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor

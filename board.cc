@@ -5,10 +5,10 @@
 
 // Constructor
 Board::Board(){
-    grid.resize(15, std::vector<Tile>(11));
+    grid.resize(ROWS, std::vector<Tile>(COLS));
     // Set all to blank initially
-    for (int i = 0; i < 15; ++i) {
-        for (int j = 0; j < 11; ++j) {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLS; ++j) {
             if (j % 2 == 0) {
                 Tile blankTile{'#', false, nullptr};
                 grid[i][j] = blankTile;
@@ -175,10 +175,10 @@ void Board::shiftDown(int i){
 
 void Board::clearBoard() {
     grid.clear();
-    grid.resize(15, std::vector<Tile>(11));
+    grid.resize(ROWS, std::vector<Tile>(COLS));
     // Set all to blank
-    for (int i = 0; i < 15; ++i) {
-        for (int j = 0; j < 11; ++j) {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLS; ++j) {
             Tile blankTile{' ', false, nullptr};
                 grid[i][j] = blankTile;
         }
