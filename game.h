@@ -31,7 +31,6 @@ class Game : public Subject{
 
         char getState(int board, int row, int col) const override;
         Block *getNextBlock(int p); // For textObserver to fetch the next Block
-        
 };
 
 #endif
