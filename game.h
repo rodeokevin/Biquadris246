@@ -57,9 +57,9 @@ class Game : public Subject {
     Board *getBoard() const;
 
     char getState(int board, int row, int col) const override;
-
+    
     void switchPlayerTurn();
-    Block *getNextBlock(int p);
+    Block *getNextBlock(int p); // For textObserver to fetch the next Block
     void play();
     void restart();
 };

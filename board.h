@@ -8,19 +8,21 @@
 
 class Board {
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
-    Block *currentBlock;
-    Block *nextBlock;
+    std::shared_ptr<Block> currentBlock;
+    std::shared_ptr<Block> nextBlock;
 
     bool tryMoveBlock(string dir); // Check if a Block can move (dir is "l", "r" or "d")
     bool tryRotateBlock(string dir); // Check if a Block can rotate (dir is either "CW" or "CCW")
+    // [TODO]
+    void shiftDown(int i); //Shifts all blocks in rows above and including i downards by 1
     public:
         friend class Game;
         Board(); // Constructor
         char charAt(int row, int col) const; // Get the char at a specific index
         Block *getNextBlock();
         
-        void setNewCurrentBlock(Block *block); // Set the new currentBlock
-        void setNewNextBlock(Block *block); // Set the new nextBlock
+        void setNewCurrentBlock(std::shared_ptr<Block> block); // Set the new currentBlock
+        void setNewNextBlock(std::shared_ptr<Block> block); // Set the new nextBlock
 
         bool tryPlaceBlock(); // Check if a Block can be placed at starting position
         void placeBlock();
@@ -34,8 +36,7 @@ class Board {
 
         // [TODO]
         int clearFullRows(); // Clears full rows from the board and returns the number of cleared rows
-        // [TODO]
-        void shiftDown(int i); //Shifts all blocks in rows above and including i downards by 1
+        void clearBoard(); // Set all Tiles to blank Tiles
 };
 
 #endif
