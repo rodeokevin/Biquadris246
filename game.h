@@ -32,7 +32,9 @@ class Game : public Subject {
     std::unique_ptr<Player> p1, p2;
     std::unique_ptr<Board> board1, board2;
 
+    // private methods, mechanics to allow our game to run
     void updateHiScore();
+    void playTurn();
 
    public:
     Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor
