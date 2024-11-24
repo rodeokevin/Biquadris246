@@ -12,15 +12,15 @@ char Game::getState(int board, int row, int col) const {
 }
 
 Block* Game::getNextBlock(int player) {
-    return (p == 1) ? board1->nextBlock : board2->nextBlock;
+    return (player == 1) ? board1->nextBlock : board2->nextBlock;
 }
 
-int Game::getLevel(int player) {
-    return (p == 1) ? p1->getLevel() : p2->getLevel();
+int Game::getLevel(int player) const {
+    return (player == 1) ? p1->getLevel() : p2->getLevel();
 }
 
-int Game::getScore(int player) {
-    return (p == 1) ? p1->getScore() : p2->getScore();
+int Game::getScore(int player) const {
+    return (player == 1) ? p1->getScore() : p2->getScore();
 }
 
 void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
@@ -32,7 +32,7 @@ void Game::updateScoreDestroyedBlock(int increase) {
     updateHiScore();
 }
 
-int Game::getPlayerTurn() {
+int Game::getPlayerTurn() const {
     return currentPlayer;
 }
 
@@ -40,8 +40,8 @@ void Game::switchPlayerTurn() {
     currentPlayer = 1 - currentPlayer;
 }
 
-Board* Game::getBoard() {
-    return currentPlayer == 0 ? board1 : board2;
+Board* Game::getBoard() const {
+    return currentPlayer == 0 ? board1.get() : board2.get();
 }
 
 Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)

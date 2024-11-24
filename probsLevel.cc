@@ -97,10 +97,3 @@ char ProbsLevel::produceNoRandBlock() {
 ProbsLevel::~ProbsLevel() {
     if (f.is_open()) f.close();
 }
-
-void ProbsLevel::outputProbs() {
-    for (int i = 0; i < NUM_BLOCKS; ++i) {
-        std::cout << "Probability for block " << blocks[i] << ": "
-                  << probs[i] << std::endl;
-    }
-}

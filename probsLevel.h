@@ -20,15 +20,16 @@ class ProbsLevel: public Level {
         std::string seq;
         std::ifstream f;
 
-    public:
-        ProbsLevel(const int l, const std::vector<float> p);
-        void setNoRand(std::string sequence = "");
-        void setRand();
-        char produceBlock() override;
+        // private methods, depending on whether we want randomized blocks
         char produceRandBlock();
         char produceNoRandBlock();
+
+    public:
+        ProbsLevel(const int l, const std::vector<float> p);
+        void setNoRand(std::string sequence = "") override;
+        void setRand() override;
+        char produceBlock() override;
         ~ProbsLevel();
-        void outputProbs() override;
 };
 
 #endif

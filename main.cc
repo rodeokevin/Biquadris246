@@ -10,6 +10,8 @@
 #include "tile.h"
 
 int main(int argc, char* argv[]) {
+    // constants indicating the number/range of available levels
+    const int LOWEST_LEVEL = 0, HIGHEST_LEVEL = 4;
     // setting up the default options, if none are supplied
     bool textOnly = false;
     int seed = 1;
@@ -37,13 +39,21 @@ int main(int argc, char* argv[]) {
         } else if (s == "-startlevel") {
             ++i;
             startLevel = std::stoi(argv[i]);
+
+            if (startLevel < LOWEST_LEVEL || startLevel > HIGHEST_LEVEL) {
+                std::cerr << "Invalid level range. Available levels range from "
+                     << LOWEST_LEVEL << " to " << HIGHEST_LEVEL << ", inclusive."
+                     << std::endl;
+                
+                return 1;
+            }
         } else {
-            cerr << "Invalid command. Valid commands are:\n"
-                 << "\t'-text'\n"
-                 << "\t'-seed SEEDVAL', replace SEEDVAL with a seed value\n"
-                 << "\t'-scriptfile1 FILENAME', replace FILENAME with an existing file name\n"
-                 << "\t'-scriptfile2 FILENAME', replace FILENAME with an existing file name\n"
-                 << "\t'-startlevel LEVEL', replace LEVEL with an appropriate level\n";
+            std::cerr << "Invalid command. Valid commands are:\n"
+                      << "\t'-text'\n"
+                      << "\t'-seed SEEDVAL', replace SEEDVAL with a seed value\n"
+                      << "\t'-scriptfile1 FILENAME', replace FILENAME with an existing file name\n"
+                      << "\t'-scriptfile2 FILENAME', replace FILENAME with an existing file name\n"
+                      << "\t'-startlevel LEVEL', replace LEVEL with an appropriate level\n";
             
             return 1;
         }

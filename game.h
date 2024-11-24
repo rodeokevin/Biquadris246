@@ -2,6 +2,7 @@
 #define GAME_H
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "board.h"
 #include "observer.h"
@@ -39,7 +40,7 @@ class Game : public Subject {
     // Accessors (and settors?)
     int getLevel(int player) const;
     int getScore(int player) const;
-    int updateScoreDestroyedBlock(int increase);
+    void updateScoreDestroyedBlock(int increase);
 
     int getPlayerTurn() const;
     Board *getBoard() const;
@@ -48,6 +49,7 @@ class Game : public Subject {
 
     void switchPlayerTurn();
     Block *getNextBlock(int p);
+    void play();
 };
 
 #endif

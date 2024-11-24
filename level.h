@@ -1,5 +1,6 @@
 #ifndef LEVEL_H
 #define LEVEL_H
+#include <string>
 
 class Level {
     protected:
@@ -10,7 +11,8 @@ class Level {
         virtual ~Level();
         virtual char produceBlock() = 0;
         int getLevel();
-        virtual void outputProbs();
+        virtual void setNoRand(std::string s = "");
+        virtual void setRand();
 };
 
 #endif

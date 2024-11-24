@@ -6,4 +6,6 @@ Level::~Level() {}
 
 int Level::getLevel() { return level; }
 
-void Level::outputProbs() {}
+void Level::setNoRand(std::string s) {}
+
+void Level::setRand() {}
