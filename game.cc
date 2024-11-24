@@ -12,7 +12,7 @@ char Game::getState(int board, int row, int col) const {
 }
 
 Block* Game::getNextBlock(int p) {
-    return (p == 1) ? board1->nextBlock : board2->nextBlock;
+    return (p == 1) ? board1->nextBlock.get() : board2->nextBlock.get();
 }
 
 int Game::getLevel(int p) {

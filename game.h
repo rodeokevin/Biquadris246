@@ -20,7 +20,7 @@ class Subject {
 };
 
 class Game : public Subject{
-    int p1Level, p2Level, p1Score, p2Score;
+    int p1Level, p2Level, p1Score = 0, p2Score = 0;
     Board *board1, *board2;
     public:
         Game(int p1Level, int p2Level, Board *board1, Board *board2); // Ctor
@@ -30,7 +30,7 @@ class Game : public Subject{
         int getScore(int p);
 
         char getState(int board, int row, int col) const override;
-        Block *getNextBlock(int p);
+        Block *getNextBlock(int p); // For textObserver to fetch the next Block
         
 };
 

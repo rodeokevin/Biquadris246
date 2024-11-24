@@ -8,10 +8,10 @@
 
 using namespace std;
 
-class Block {
+class Block : public std::enable_shared_from_this<Block>{
   protected:
-    // Tile that forms the Blcok
-    Tile blockTile;
+    // Char that the Tiles will be made of
+    char tileSymbol;
     // 0 is Horizontal, 1 is Vertical
     int state = 0; // starts Horizontal
     // Vector of pairs to store the relative coords of the Tiles forming the Block
@@ -25,7 +25,8 @@ class Block {
     friend class board;
     std::vector<std::pair<int, int>> getCoords() const;
     virtual ~Block() = 0; // To make class abstract
-    Tile getBlockTile() const;
+    virtual Tile getBlockTile() = 0; // THIS SHOULD ONLY BE CALLED WHEN PLACING A TILE ON THE BOARD
+    char getBlockSymbol();
 
     // Get the new coords when rotating (give "CW" or "CCW")
     virtual std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const;
@@ -45,6 +46,7 @@ class OBlock : public Block {
     ~OBlock() override = default;
     // Override because rotation on OBlock does nothing
     std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
+    Tile getBlockTile() override;
 };
 
 // IBlock
@@ -52,6 +54,7 @@ class IBlock : public Block {
   public:
     IBlock();
     ~IBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 // SBlock
@@ -59,6 +62,7 @@ class SBlock : public Block {
   public:
     SBlock();
     ~SBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 // ZBlock
@@ -66,6 +70,7 @@ class ZBlock : public Block {
   public:
     ZBlock();
     ~ZBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 // JBlock
@@ -73,6 +78,7 @@ class JBlock : public Block {
   public:
     JBlock();
     ~JBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 // LBlock
@@ -80,6 +86,7 @@ class LBlock : public Block {
   public:
     LBlock();
     ~LBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 // TBlock
@@ -87,6 +94,7 @@ class TBlock : public Block {
   public:
     TBlock();
     ~TBlock() override = default;
+    Tile getBlockTile() override;
 };
 
 #endif
