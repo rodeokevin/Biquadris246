@@ -1,9 +1,10 @@
 #include "block.h"
+#include <memory>
 
 // Abstract Block class
 Block::~Block(){} // Destructor does nothing
-Tile Block::getBlockTile() const { return blockTile; }
 std::vector<std::pair<int, int>> Block::getCoords() const { return coords; }
+char Block::getBlockSymbol() { return tileSymbol; }
 
 // New coords for rotation
 // Get rotated coords
@@ -119,14 +120,12 @@ void Block::move(string dir) {
 }
 
 
-
-
 // Derived classes
 
 // OBlock class
 
 OBlock::OBlock() {
-    blockTile = Tile('O', true, this);
+    tileSymbol = 'O';
     coords = {{0, 2}, {1, 2}, {0, 3}, {1, 3}}; // Default position on the board when dropped
     bottomLeft = {0,3};
     bottomRight = {1,3};
@@ -137,75 +136,103 @@ OBlock::OBlock() {
 std::vector<std::pair<int, int>> OBlock::computeRotatedCoords(string dir) const {
     return coords;
 }
+// Construct and return the tile by value
+Tile OBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // IBlock class
 
 IBlock::IBlock() {
-    blockTile = Tile('I', true, this);
+    tileSymbol = 'I';
     coords = {{0, 3}, {1, 3}, {2, 3}, {3, 3}};
     bottomLeft = {0,3};
     bottomRight = {3,3};
     topLeft = {0,3};
     topRight = {3,3};
 }
+// Construct and return the tile by value
+Tile IBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // SBlock class
 
 // Constructor
 SBlock::SBlock() {
-    blockTile = Tile('S', true, this);
+    tileSymbol = 'S';
     coords = {{0, 3}, {1, 3}, {1, 2}, {2, 2}};
     bottomLeft = {0,3};
     bottomRight = {2,3};
     topLeft = {0,2};
     topRight = {2,2};
 }
+// Construct and return the tile by value
+Tile SBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // ZBlock class
 
 // Constructor
 ZBlock::ZBlock() {
-    blockTile = Tile('Z', true, this);
+    tileSymbol = 'Z';
     coords = {{0, 2}, {1, 2}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
     bottomRight = {2,3};
     topLeft = {0,2};
     topRight = {2,2};
 }
+// Construct and return the tile by value
+Tile ZBlock::getBlockTile() {
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // JBlock class
 
 // Constructor
 JBlock::JBlock() {
-    blockTile = Tile('J', true, this);
+    tileSymbol = 'J';
     coords = {{0, 2}, {0, 3}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
     bottomRight = {2,3};
     topLeft = {0,2};
     topRight = {2,2};
 }
+// Construct and return the tile by value
+Tile JBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // LBlock class
 
 // Constructor
 LBlock::LBlock() {
-    blockTile = Tile('L', true, this);
+    tileSymbol = 'L';
     coords = {{2, 2}, {0, 3}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
     bottomRight = {2,3};
     topLeft = {0,2};
     topRight = {2,2};
 }
+// Construct and return the tile by value
+Tile LBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}
 
 // TBlock class
 
 // Constructor
 TBlock::TBlock() {
-    blockTile = Tile('T', true, this);
+    tileSymbol = 'T';
     coords = {{0, 2}, {1, 2}, {2, 2}, {1, 3}};
     bottomLeft = {0,3};
     bottomRight = {2,3};
     topLeft = {0,2};
     topRight = {2,2};
+}
+// Construct and return the tile by value
+Tile TBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
 }
 

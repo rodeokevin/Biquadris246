@@ -14,11 +14,11 @@ void TextObserver::notify() {
     // Body (the board) [TODO: optimize how we output? if it is Player1's turn, don't loop Player 2's board]
     for (int i = 0; i < 15; ++i) {
         for (int j = 0; j < 11; ++j) {
-            cout << game->getState(1, i, j); // State of p1
+            out << game->getState(1, i, j); // State of p1
         }
         cout << "     ";
         for (int j = 0; j < 11; ++j) {
-            cout << game->getState(2, i, j); // State of p2
+            out << game->getState(2, i, j); // State of p2
         }
         out << endl;
     }
@@ -32,7 +32,7 @@ void TextObserver::notify() {
             // If the following does not find, print " "
             for (int k = 0; k < 4; ++k) {
                 if (((game->getNextBlock(1))->getCoords())[k].first == j && ((game->getNextBlock(1))->getCoords())[k].second == i) {
-                    out << ((game->getNextBlock(1))->getBlockTile()).getSymbol();
+                    out << (game->getNextBlock(1))->getBlockSymbol();
                     found = true;
                 }
             }
@@ -44,7 +44,7 @@ void TextObserver::notify() {
             // If the following does not find, print " "
             for (int k = 0; k < 4; ++k) {
                 if (((game->getNextBlock(2))->getCoords())[k].first == j && ((game->getNextBlock(2))->getCoords())[k].second == i) {
-                    out << ((game->getNextBlock(2))->getBlockTile()).getSymbol();
+                    out << (game->getNextBlock(2))->getBlockSymbol();
                     found = true;
                 }
             }

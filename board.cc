@@ -1,6 +1,7 @@
 #include "board.h"
 #include "tile.h"
 #include "block.h"
+#include <memory>
 
 // Constructor
 Board::Board(){
@@ -24,12 +25,13 @@ char Board::charAt(int row, int col) const {
     return grid[row][col].getSymbol();
 }
 
-Block* Board::getNextBlock() { return nextBlock; }
+// For the textObserver to get the next Block
+Block* Board::getNextBlock() { return nextBlock.get(); }
 
-void Board::setNewCurrentBlock(Block *block) {
+void Board::setNewCurrentBlock(std::shared_ptr<Block> block) {
     currentBlock = block;
 }
-void Board::setNewNextBlock(Block *block) {
+void Board::setNewNextBlock(std::shared_ptr<Block> block) {
     nextBlock = block;
 }
 
@@ -135,23 +137,51 @@ void Board::dropBlock() {
 }
 
 // [TODO]
-// Clear any full rows and shift above cells downwards if needed
+// Clear any full rows and shift above Tile downwards if needed
 int Board::clearFullRows() {
-    for (int j = 0; j < 15; j++) {
+    int clearedRows = 0;
+    int row = 14;
+    while (row > 0) {
+        bool isRowFull = true;
         for (int i = 0; i < 11; ++i) {
-            if (charAt(i,j) != ' ') {
-                
-            }
-            else {
-                continue;
+            if (grid[row][i].getSymbol() == ' ') {
+                isRowFull = false;
             }
         }
+        // If the row is full, shift all rows above downwards (which will remove the full row Tiles)
+        if (isRowFull) {
+            shiftDown(row);
+            ++clearedRows;
+        }
+        // Or else move up to a higher row
+        else {
+            --row;
+        }
     }
-    return 0;
+    return clearedRows;
 }
 
 // [TODO]
+// Shift all Tiles above and including row i down 1
 void Board::shiftDown(int i){
+    Tile blankTile{' ', false, nullptr};
+    for (int j = i; j > 0; --j) {
+        for (int k = 0; k < 11; k++) {
+            grid[j][k] = grid[j-1][k];
+            grid[j-1][k] = blankTile;
+        }
+    }
+}
 
+void Board::clearBoard() {
+    grid.clear();
+    grid.resize(15, std::vector<Tile>(11));
+    // Set all to blank
+    for (int i = 0; i < 15; ++i) {
+        for (int j = 0; j < 11; ++j) {
+            Tile blankTile{' ', false, nullptr};
+                grid[i][j] = blankTile;
+        }
+    }
 }
 

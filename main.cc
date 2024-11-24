@@ -10,6 +10,7 @@
 #include "tile.h"
 
 int main(int argc, char* argv[]) {
+  
     // constants indicating the number/range of available levels
     const int LOWEST_LEVEL = 0, HIGHEST_LEVEL = 4;
     // setting up the default options, if none are supplied
