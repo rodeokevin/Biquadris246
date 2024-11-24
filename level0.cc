@@ -1,8 +1,8 @@
 #include "level0.h"
 
-Level0::Level0(const int l, std::string s1, std::string s2): Level{l}, seq1{s1}, seq2{s2}, f1{seq1}, f2{seq2} { level = 0; }
+Level0::Level0(const int l, std::string s): Level{l}, seq{s}, f{seq} {}
 
-char Level0::readLine(std::ifstream& f) {
+char Level0::produceBlock() {
     char c;
     
     // as long as the input file stream finds a character, we read it
@@ -28,12 +28,6 @@ char Level0::readLine(std::ifstream& f) {
     return 0;
 }
 
-char Level0::produceBlock(int player) {
-    if (player == 0) return readLine(f1);
-    else return readLine(f2);
-}
-
 Level0::~Level0() {
-    f1.close();
-    f2.close();
+    f.close();
 }

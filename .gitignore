@@ -1,3 +1,4 @@
 *.o
 *.d
-mainKevin.cc
+test.cc
+*.txt

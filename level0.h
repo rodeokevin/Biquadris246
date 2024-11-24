@@ -5,16 +5,14 @@
 #include <string>
 
 class Level0: public Level {
-    std::string seq1;
-    std::string seq2;
-    std::ifstream f1;
-    std::ifstream f2;
+    std::string seq;
+    std::ifstream f;
 
     char readLine(std::ifstream& f);
 
     public:
-        Level0(const int l, std::string s1, std::string s2);
-        char produceBlock(int player) override;
+        Level0(const int l, std::string s);
+        char produceBlock() override;
         ~Level0() override;
 };
 

@@ -1,37 +1,65 @@
 #include "game.h"
+
 #include "board.h"
 
 // Get the state of one of the Boards
 char Game::getState(int board, int row, int col) const {
     if (board == 1) {
         return board1->charAt(row, col);
-    }
-    else {
+    } else {
         return board2->charAt(row, col);
     }
 }
 
-Block* Game::getNextBlock(int p) {
-    return (p == 1) ? board1->nextBlock.get() : board2->nextBlock.get();
+Block* Game::getNextBlock(int player) {
+    return (player == 1) ? board1->nextBlock.get() : board2->nextBlock.get();
+
+int Game::getLevel(int player) const {
+    return (player == 1) ? p1->getLevel() : p2->getLevel();
 }
 
-int Game::getLevel(int p) {
-    return (p == 1) ? p1Level : p2Level;
+int Game::getScore(int player) const {
+    return (player == 1) ? p1->getScore() : p2->getScore();
 }
 
-int Game::getScore(int p) {
-    return (p == 1) ? p1Score : p2Score;
+void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
+
+void Game::updateScoreDestroyedBlock(int increase) {
+    if (currentPlayer == 0) p1->updateScore(increase);
+    else p2->updateScore(increase);
+
+    updateHiScore();
 }
 
-Game::Game(int p1Level, int p2Level, Board *board1, Board *board2)
-    :p1Level{p1Level},p2Level{p2Level},board1{board1},board2{board2}{}
+int Game::getPlayerTurn() const {
+    return currentPlayer;
+}
 
-void Subject::attach( Observer* o ) {
+void Game::switchPlayerTurn() {
+    currentPlayer = 1 - currentPlayer;
+}
+
+Board* Game::getBoard() const {
+    return currentPlayer == 0 ? board1.get() : board2.get();
+}
+
+Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
+    : textOnly{textOnly}, hiScore{0}, currentPlayer{0} {
+    // setting up the players
+    p1 = std::make_unique<Player>(seq1, startLevel);
+    p2 = std::make_unique<Player>(seq2, startLevel);
+    // setting up the board for each player, though they do not actually have
+    // access to their associated player
+    board1 = std::make_unique<Board>(this);
+    board2 = std::make_unique<Board>(this);
+}
+
+void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector
     observers.push_back(o);
 }
 
-void Subject::detach( Observer* o ) {
+void Subject::detach(Observer* o) {
     // Find the observer and erase it (it does nothing if not found)
     for (auto it = observers.begin(); it != observers.end(); ++it) {
         if (*it == o) {
