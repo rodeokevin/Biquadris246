@@ -20,3 +20,5 @@ void Player::setNoRand(std::string s) { l->setNoRand(s); }
 void Player::setRand() { l->setRand(); }
 
 void Player::updateScore(int inc) { score += inc; }
+
+char Player::getBlock() { return l->produceBlock(); }

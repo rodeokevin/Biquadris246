@@ -21,6 +21,7 @@ class Player {
         void setNoRand(std::string s = "");
         void setRand();
         void updateScore(int inc);
+        char getBlock();
 };
 
 #endif
