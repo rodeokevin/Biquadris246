@@ -1,4 +1,5 @@
 #include "probsLevel.h"
+#include <iostream>
 
 ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
     Level{l}, probs(NUM_BLOCKS, 0), noRand{false} {
@@ -31,10 +32,10 @@ ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
 
 void ProbsLevel::setNoRand(std::string sequence) {
     noRand = true;
-    seq = sequence;
 
     if (f.is_open()) f.close();
 
+    seq = sequence;
     f.open(seq);
 }
 
