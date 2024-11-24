@@ -2,6 +2,18 @@
 
 #include "board.h"
 
+Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
+    : textOnly{textOnly}, hiScore{0}, currPlayerIdx{0} {
+    // setting up the players
+    p1 = std::make_unique<Player>(seq1, startLevel);
+    p2 = std::make_unique<Player>(seq2, startLevel);
+    currPlayerPointer = p1.get();
+    // setting up the board for each player, though they do not actually have
+    // access to their associated player
+    board1 = std::make_unique<Board>(this);
+    board2 = std::make_unique<Board>(this);
+}
+
 // Get the state of one of the Boards
 char Game::getState(int board, int row, int col) const {
     if (board == 1) {
@@ -26,31 +38,33 @@ int Game::getScore(int player) const {
 void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
 
 void Game::updateScoreDestroyedBlock(int increase) {
-    if (currentPlayer == 0) p1->updateScore(increase);
-    else p2->updateScore(increase);
+    currPlayerPointer->updateScore(increase);
 
     updateHiScore();
 }
 
 int Game::getPlayerTurn() const {
-    return currentPlayer;
+    return currPlayerIdx;
 }
 
 void Game::switchPlayerTurn() {
-    currentPlayer = 1 - currentPlayer;
+    // updating the Player pointer
+    if (currPlayerIdx = 0) currPlayerPointer = p2.get();
+    else currPlayerPointer = p1.get();
+
+    // updating the player 'index'
+    currPlayerIdx = 1 - currPlayerIdx;
 }
 
 Board* Game::getBoard() const {
-    return currentPlayer == 0 ? board1.get() : board2.get();
+    return currPlayerIdx == 0 ? board1.get() : board2.get();
 }
 
-Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
-    : textOnly{textOnly}, hiScore{0}, currentPlayer{0} {
-    // setting up the players
-    p1 = std::make_unique<Player>(seq1, startLevel);
-    p2 = std::make_unique<Player>(seq2, startLevel);
-    // setting up the board for each player, though they do not actually have
-    // access to their associated player
+void Game::restart() {
+    currPlayerIdx = 0;
+    p1->restart();
+    p2->restart();
+    currPlayerPointer = p1.get();
     board1 = std::make_unique<Board>(this);
     board2 = std::make_unique<Board>(this);
 }

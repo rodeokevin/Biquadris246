@@ -26,15 +26,24 @@ class Subject {
 class Game : public Subject {
     bool textOnly;
     int hiScore;
-    // update 'currentPlayer' using: currentPlayer = 1 - currentPlayer, like
+    // update 'currPlayerIdx' using: currPlayerIdx = 1 - currPlayerIdx, like
     // taking the NOT of a bit
-    int currentPlayer;
+    int currPlayerIdx;
     std::unique_ptr<Player> p1, p2;
+    // raw pointer pointing to the current player, makes it easier to access the
+    // actual Player object instead, and relies on 'currPlayerIdx' integer to
+    // switch between the two players easily
+    Player* currPlayerPointer;
     std::unique_ptr<Board> board1, board2;
 
     // private methods, mechanics to allow our game to run
     void updateHiScore();
-    void playTurn();
+    // returns TRUE when the turn ended successfully, meaning it is now the next
+    // player's turn, and FALSE when EOF is reached
+    bool playTurn();
+    void applySpecAct();
+    void addSpecAct(std::string specAct);
+    void clearSpecAct();
 
    public:
     Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor
@@ -52,6 +61,7 @@ class Game : public Subject {
     void switchPlayerTurn();
     Block *getNextBlock(int p);
     void play();
+    void restart();
 };
 
 #endif

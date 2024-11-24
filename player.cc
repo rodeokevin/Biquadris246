@@ -11,9 +11,9 @@ void Player::setLevel(int level) {
     else l = std::make_unique<ProbsLevel>(level, pol->obtainLvlProb(level));
 }
 
-int Player::getScore() { return score; }
+int Player::getScore() const { return score; }
 
-int Player::getLevel() { return l->getLevel(); }
+int Player::getLevel() const { return l->getLevel(); }
 
 void Player::setNoRand(std::string s) { l->setNoRand(s); }
 
@@ -21,4 +21,21 @@ void Player::setRand() { l->setRand(); }
 
 void Player::updateScore(int inc) { score += inc; }
 
-char Player::getBlock() { return l->produceBlock(); }
+char Player::getBlock() const { return l->produceBlock(); }
+
+void Player::addSpecAct(bool lastWholeTurn, std::string specAct) {
+    activeSpecAct.push_back({lastWholeTurn, specAct});
+}
+
+void Player::clearSpecAct() { activeSpecAct.clear(); }
+
+void Player::restart() {
+    updateScore(-score);
+    setLevel(getLevel());
+    clearSpecAct();
+    lvl4LastClearRow = 0;
+}
+
+void Player::turnEnd(bool clearedRow) {
+    
+}
