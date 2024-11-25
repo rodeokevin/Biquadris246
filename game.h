@@ -8,6 +8,7 @@
 #include "observer.h"
 #include "tile.h"
 #include "player.h"
+#include "commandInterpreter.h"
 
 class Observer;  // forward declaration
 
@@ -24,6 +25,9 @@ class Subject {
 };
 
 class Game : public Subject {
+    // clearing more than 'SPECIAL_ACTION_THRES' rows allows the current player
+    // to pick at least one special action
+    const int SPECIAL_ACTION_THRES = 1;
     bool textOnly;
     int hiScore;
     // update 'currPlayerIdx' using: currPlayerIdx = 1 - currPlayerIdx, like
@@ -35,12 +39,21 @@ class Game : public Subject {
     // switch between the two players easily
     Player* currPlayerPointer;
     std::unique_ptr<Board> board1, board2;
+    std::unique_ptr<CommandInterpreter> ci;
 
     // private methods, mechanics to allow our game to run
     void updateHiScore();
-    // returns TRUE when the turn ended successfully, meaning it is now the next
-    // player's turn, and FALSE when EOF is reached
-    bool playTurn();
+    // Returns TRUE when the turn ended successfully, meaning it is now the next
+    // player's turn, and FALSE when EOF is reached. Directly mutates the argument
+    // to indicate how many rows the player has cleared on their turn.
+    bool playTurn(int& currTurnRowsCleared);
+    // prompting the player to choose special action(s) depending on 'rowsCleared'
+    void promptForSpecAct(int rowsCleared);
+    // obtaining valid input from the player when prompting them for special
+    // action(s)
+    void promptValSpecAct(std::vector<std::string>& validSpecAct);
+    // checking for duplicates for the chosen special actions
+    void checkDupSpecAct(std::vector<std::string>& specActs);
     // methods relating to the special actions, adding them to a Board and
     // clearing the special actions upon a turn end, as all special actions
     // currently only last one turn for a player
@@ -48,7 +61,7 @@ class Game : public Subject {
     void clearSpecAct();
     // method to add the penalty 1-by-1 block for the current player if they
     // were unable to clear a block within 5 turns when in Level 4
-    void addPenalty();
+    bool addPenalty();
 
    public:
     Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor

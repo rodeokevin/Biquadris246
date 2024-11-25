@@ -1,5 +1,5 @@
+#include <iostream>
 #include "game.h"
-
 #include "board.h"
 
 Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
@@ -12,6 +12,8 @@ Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
     // access to their associated player
     board1 = std::make_unique<Board>(this);
     board2 = std::make_unique<Board>(this);
+    // initializing the command interpreter
+    ci = std::make_unique<CommandInterpreter>();
 }
 
 // Get the state of one of the Boards
@@ -37,8 +39,8 @@ int Game::getScore(int player) const {
 
 void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
 
-void Game::updateScoreDestroyedBlock(int increase) {
-    currPlayerPointer->updateScore(increase);
+void Game::updateScoreDestroyedBlock(int origLvl) {
+    currPlayerPointer->scoreBlock(origLvl);
 
     updateHiScore();
 }
@@ -69,7 +71,80 @@ void Game::restart() {
     board2 = std::make_unique<Board>(this);
 }
 
-void Game::addPenalty() {}
+// Tries to drop a 1-by-1 block in the middle column of the current player's board.
+// Returns True if successful, and False otherwise (the player loses, since the
+// middle column is full and cannot take an extra block)
+bool Game::addPenalty() {
+    if (currPlayerIdx == 0) return board1->addPenaltyBlock();
+    else return board2->addPenaltyBlock();
+}
+
+// prompts the current player if they cleared more than 1 row this turn to pick
+// one or more special actions, depending on the number of rows cleared
+void Game::promptForSpecAct(int rowsCleared) {
+    const int numOfSpecAct = rowsCleared - SPECIAL_ACTION_THRES;
+    std::vector<std::string> validInputSpecAct;
+
+    if (numOfSpecAct > 0) {
+        cout << "Multiple rows cleard!" << " You are allowed to pick " << numOfSpecAct;
+
+        // different output depending on the number of special actions the player
+        // can pick
+        if (numOfSpecAct > 1) cout << " special actions.\n";
+        else cout << " special action.\n";
+
+        // listing out the available actions
+        cout << "The available actions are:\t"
+             << "\tblind\n" << "\theavy\n" << "\tforce BLOCK"
+             << ", replace BLOCK by one of I, J, L, O, S, Z, or T\n";
+        
+        while (validInputSpecAct.size() != numOfSpecAct) {
+            promptValSpecAct(validInputSpecAct);
+            checkDupSpecAct(validInputSpecAct);
+        }
+    }
+}
+
+void Game::promptValSpecAct(std::vector<std::string>& specActs) {
+    while (!ci->parseSpecAct(specActs)) {
+        cout << "Invalid special action. Try again.\n";
+    }
+}
+
+void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
+    bool removedDup = false;
+
+    // looking for duplicates by brute force, luckily there cannot be many special
+    // actions at a time, technically at most 3 since as the tallest block, the
+    // I-block, allows at most 4 rows to be cleared, which is at most 3 special
+    // actions
+    for (auto it1 = specActs.begin(); it != specActs.end(); ++it) {
+        for (auto it2 = std::next(it, 1); it2 != specActs.end();) {
+            if (*it1 == *it2){
+                specActs.erase(it2);
+                removedDup = true;
+            } else if ((*it1).size() == 1 && (*it2).size() == 1) {
+                specActs.erase(it2);
+            }
+        }
+    }
+
+    if (removedDup) cout << "Removed duplicate special actions.\n";
+}
+
+// overall method to play the game, uses helper functions for different parts of
+// the game, such as a turn, end of a turn, and so on
+void Game::play() {
+    int currTurnRowsCleared = 0;
+
+    while (playTurn(currTurnRowsCleared)) {
+        promptForSpecAct(currTurnRowsCleared);
+
+        switchPlayerTurn();
+        // reset the number of rows cleared for the next player's turn
+        currTurnRowsCleared = 0;
+    }
+}
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector
