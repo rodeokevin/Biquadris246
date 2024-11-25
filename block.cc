@@ -18,8 +18,8 @@ std::vector<std::pair<int, int>> Block::computeRotatedCoords(string dir) const {
         std::pair<int, int> rotatedBottomRight = {-(bottomRight.second), bottomRight.first};
         adjustX = prevBottomLeft.first - rotatedBottomRight.first;
         adjustY = prevBottomLeft.second - rotatedBottomRight.second;
-        for (int i = 0; i < 4; ++i) {
-            res.emplace_back(-(coords[i].second) + adjustX, coords[i].first + adjustY);
+        for (auto it : coords) {
+            res.emplace_back(-(it.second) + adjustX, it.first + adjustY);
         }
     }
     // CCW rotation
@@ -27,8 +27,8 @@ std::vector<std::pair<int, int>> Block::computeRotatedCoords(string dir) const {
         std::pair<int, int> rotatedTopLeft = {topLeft.second, -(topLeft.first)};
         adjustX = prevBottomLeft.first - rotatedTopLeft.first;
         adjustY = prevBottomLeft.second - rotatedTopLeft.second;
-        for (int i = 0; i < 4; ++i) {
-            res.emplace_back(coords[i].second + adjustX, -(coords[i].first) + adjustY);
+        for (auto it : coords) {
+            res.emplace_back(it.second + adjustX, -(it.first) + adjustY);
         }
     }
     return res;
@@ -74,20 +74,20 @@ std::vector<std::pair<int, int>> Block::computeMovedCoords(string dir) const {
     std::vector<std::pair<int, int>> res;
     // Move left
     if (dir == "l") {
-        for (int i = 0; i < 4; ++i) {
-            res.emplace_back(coords[i].first - 1, coords[i].second);
+        for (auto it : coords) {
+            res.emplace_back(it.first - 1, it.second);
         }
     }
     // Move right
     else if (dir == "r") {
-        for (int i = 0; i < 4; ++i) {
-            res.emplace_back(coords[i].first + 1, coords[i].second);
+        for (auto it : coords) {
+            res.emplace_back(it.first + 1, it.second);
         }
     }
     // Move down
     else {
-        for (int i = 0; i < 4; ++i) {
-            res.emplace_back(coords[i].first, coords[i].second + 1);
+        for (auto it : coords) {
+            res.emplace_back(it.first, it.second + 1);
         }
     }
     return res;
@@ -236,3 +236,16 @@ Tile TBlock::getBlockTile() {
     return Tile(tileSymbol, true, shared_from_this());
 }
 
+// Constructor
+StarBlock::StarBlock() {
+    tileSymbol = '*';
+    coords = {{5,0}};
+    bottomLeft = {5,0};
+    bottomRight = {5,0};
+    topLeft = {5,0};
+    topRight = {5,0};
+}
+// Construct and return the tile by value
+Tile StarBlock::getBlockTile() { 
+    return Tile(tileSymbol, true, shared_from_this());
+}

@@ -34,7 +34,7 @@ class Block : public std::enable_shared_from_this<Block>{
     void rotate(string dir);
 
     // Get the new coords when moving (give "l", "r", or "d")
-    std::vector<std::pair<int, int>> computeMovedCoords(string dir) const;
+    virtual std::vector<std::pair<int, int>> computeMovedCoords(string dir) const;
     // Actually move the block
     void move(string dir);
 };
@@ -94,6 +94,14 @@ class TBlock : public Block {
   public:
     TBlock();
     ~TBlock() override = default;
+    Tile getBlockTile() override;
+};
+
+// StarBlock
+class StarBlock : public Block {
+  public:
+    StarBlock();
+    ~StarBlock() override = default;
     Tile getBlockTile() override;
 };
 
