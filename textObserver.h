@@ -11,6 +11,8 @@ class TextObserver: public Observer {
     std::ostream &out = std::cout;
     // Pointer to the Game subject
     Game *game;
+    void printNormal();
+    void printBlind();
 
     public:
         TextObserver(Game *game);
@@ -18,3 +20,4 @@ class TextObserver: public Observer {
         ~TextObserver() = default;
 };
 #endif
+
