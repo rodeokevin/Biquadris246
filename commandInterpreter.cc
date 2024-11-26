@@ -48,13 +48,13 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
         this->game->getCurrentPlayer()->setNoRand(fileName);
     };
 
-    commands["I"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<IBlock>()); };
-    commands["J"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<JBlock>()); };
-    commands["L"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<LBlock>()); };
-    commands["O"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<OBlock>()); };
-    commands["S"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<SBlock>()); };
-    commands["Z"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<ZBlock>()); };
-    commands["T"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<TBlock>()); };
+    commands["I"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["J"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["L"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["O"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["S"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["Z"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["T"] = [this]() { this->game->getBoard()->removeBlock(); };
 
     commands["restart"] = [this]() { this->game->restart(); };
     commands["quit"] = []() {

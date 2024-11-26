@@ -94,6 +94,16 @@ bool Game::updateBlock() {
     return !success;
 }
 
+std::shared_ptr<Block> Game::createBlock(char block) {
+    if (block == 'I') return make_shared<IBlock>();
+    else if (block == 'J') return make_shared<JBlock>();
+    else if (block == 'L') return make_shared<LBlock>();
+    else if (block == 'O') return make_shared<OBlock>();
+    else if (block == 'S') return make_shared<SBlock>();
+    else if (block == 'Z') return make_shared<ZBlock>();
+    else return make_shared<TBlock>();
+}
+
 Board* Game::getBoard() const {
     return currPlayerIdx == 0 ? board1.get() : board2.get();
 }
@@ -231,6 +241,7 @@ void Game::gameInit() {
     board1->setNewNextBlock(createBlock(p1->getBlock()));
     board2->setNewCurrentBlock(createBlock(p2->getBlock()));
     board2->setNewNextBlock(createBlock(p2->getBlock()));
+    notifyDisplays();
 }
 
 // Most of the mechanics for a player's turn. Some of the things done by this
@@ -254,50 +265,46 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
 
     // playing through the turn until we either get EOF or the 'drop' command
     while (command != "drop") {
-        // immediately end the turn, and return to the main playing loop to execute
-        // end of turn mechanics
-        if (command == "drop") {
-            notifyDisplays();
-            break;
-        }
-
         // in the case where we have the 'restart' command executed, we must also
         // break out of the loop
         if (command == "restart") {
             notifyDisplays();
-            break;
+            return true;
         }
-
-        // ADD THE CASE WHERE WE CHANGE THE BLOCK TO A NEW ONE (FOR TESTING PURPOSES,
-        // THOUGH COULD STILL CAUSE A LOSS TECHNICALLY)
-
-        // if we have a moving command other than 'drop', we must possibly apply
-        // one of or both of the Heavy properties
-        if (isMovingCom(command) && !applyLevelHeavy()) {
-            notifyDisplays();
-            break;
-        }
+        
+        // applies the appropriate Heavy effects if necessary, and displays the
+        // changes made to the Board
+        if (commandUpdatesBoard(command, currPlayerLose)) return true;
 
         // getting the command for the next move
         command = ci->parseCommand();
     }
 
-    // if we did not reach EOF (the player explicitly called "drop" or one of the
-    // Heavy properties forced their turn to end), we display the updated end of
-    // turn Boards
-    if (command == "drop") {
-        // storing the number of rows cleared during this turn
-        rowsCleared = getBoard()->clearFullRows();
-        notifyDisplays();
-    }
+    rowsCleared = getBoard()->clearFullRows();
+    notifyDisplays();
 
-    // as long as it is not EOF ('command' is the empty string), then we can
-    // continue playing
     return true;
 }
 
-bool Game::applyLevelHeavy() {
-    
+bool Game::commandUpdatesBoard(std::string command, bool& currPlayerLose) {
+    // the only command that has a length of 1 is when we wish to set the currently
+    // undropped Block to the specified Block, but this might make the Player lose
+    if (command.size() == 1)
+}
+
+bool Game::applyHeavy() {
+    // if it is not possible to move the Block, there is no need to call
+    // the actual moving method, and we return false to signal that the
+    // Block is dropped
+    if (!getBoard()->tryMoveBlock("d")) return false;
+    // otherwise, we can simply move the Block down by one row, and return
+    // true to signal that the Block is not dropped due to the Level Heavy
+    else {
+        getBoard()->moveBlock("d");
+        // showing the change
+        notifyDisplays();
+        return true;
+    }
 }
 
 // tells the text and graphical observers to display the Boards, when appropriate

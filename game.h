@@ -30,6 +30,10 @@ class Game : public Subject {
     const int SPECIAL_ACTION_THRES = 1;
     // Level number for which any such Level or higher has the 'heavy' property
     const int HEAVY_LVL = 3;
+    // constants indicating the number of rows the block would move down depending
+    // one which Heavy applies
+    const int HEAVY_LVL_DOWN = 1;
+    const int HEAVY_SPEC_ACT_DOWN = 2;
     // 'heavySpecAct' is true when the current board has the Heavy special action
     // applied to it
     bool textOnly, heavySpecAct;
@@ -66,19 +70,24 @@ class Game : public Subject {
     // the specified block, used for testing purposes and the 'force' special
     // action
     void setCurrBlock(const char block);
+    // Given a command, if it updates the Board, we display the changes, and check
+    // whether we must apply any of the Heavy properties (applies them if needed).
+    // Returns True if the current Player's turn has ended, and false otherwise.
+    // Also directly mutates the given boolean to indicate whether the current
+    // player has lost (a turn ends when a player has lost). Commands that do not
+    // update the Board directly, such as norandom, sequence, etc. make this 
+    // method return false.
+    bool commandUpdatesBoard(std::string command, bool& currPlayerLose);
     // determining whether a command is a moving command, excluding 'drop',
     // meant to be used to check whether we must apply the 'heavy' property of
     // Levels 3 and higher
     bool isMovingCom(const std::string com);
-    // if applicable, we must apply the 'heavy' property to the moved blocks,
+    // If applicable, we must apply the 'heavy' property to the moved blocks,
     // returns True if the 'down' command calls were successful, otherwise we
     // return False to indicate that the drop has been automatically dropped
-    // without needing the 'drop' command being executed
-    bool applyLevelHeavy();
-    // similar to a Level's Heavy property, we apply the Heavy special action if
-    // necessary, returns True if the 'down' command does not make a Block dropped
-    // and False if the Block becomes dropped
-    bool applySpecActHeavy();
+    // without needing the 'drop' command being executed. This is used for both
+    // the Level and Special Action 'Heavy'
+    bool applyHeavy();
     // when this method is called, we notify the appropriate observers to display
     // the board
     void notifyDisplays();
