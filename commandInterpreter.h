@@ -13,11 +13,13 @@ class CommandInterpreter {
     Game* game;
     unordered_map<string, function<void()>> commands;
 
+    void renameCommand(const string& commandName, const string& newName);
+
    public:
     CommandInterpreter(Game* game);
     ~CommandInterpreter();
 
-    void parseCommand(const string& command);
+    string parseCommand() const;
 };
 
 #endif

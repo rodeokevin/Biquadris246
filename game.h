@@ -1,13 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
 #include <iostream>
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "board.h"
 #include "observer.h"
-#include "tile.h"
 #include "player.h"
+#include "tile.h"
 
 class Observer;  // forward declaration
 
@@ -33,7 +33,7 @@ class Game : public Subject {
     // raw pointer pointing to the current player, makes it easier to access the
     // actual Player object instead, and relies on 'currPlayerIdx' integer to
     // switch between the two players easily
-    Player* currPlayerPointer;
+    Player *currPlayerPointer;
     std::unique_ptr<Board> board1, board2;
 
     // private methods, mechanics to allow our game to run
@@ -59,12 +59,13 @@ class Game : public Subject {
     void updateScoreDestroyedBlock(int increase);
 
     int getPlayerTurn() const;
+    Player *getCurrentPlayer() const;
     Board *getBoard() const;
 
     char getState(int board, int row, int col) const override;
-    
+
     void switchPlayerTurn();
-    Block *getNextBlock(int p); // For textObserver to fetch the next Block
+    Block *getNextBlock(int p);  // For textObserver to fetch the next Block
     void play();
     void restart();
 };

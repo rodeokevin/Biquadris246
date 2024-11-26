@@ -47,10 +47,16 @@ int Game::getPlayerTurn() const {
     return currPlayerIdx;
 }
 
+Player* Game::getCurrentPlayer() const {
+    return currPlayerPointer;
+}
+
 void Game::switchPlayerTurn() {
     // updating the Player pointer
-    if (currPlayerIdx = 0) currPlayerPointer = p2.get();
-    else currPlayerPointer = p1.get();
+    if (currPlayerIdx = 0)
+        currPlayerPointer = p2.get();
+    else
+        currPlayerPointer = p1.get();
 
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
