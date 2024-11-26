@@ -24,6 +24,7 @@ class Board {
         
         void setNewCurrentBlock(std::shared_ptr<Block> block); // Set the new currentBlock
         void setNewNextBlock(std::shared_ptr<Block> block); // Set the new nextBlock
+        std::shared_ptr<Block> getBoardNextBlock();
 
         bool tryPlaceBlock(); // Check if a Block can be placed at starting position
         void placeBlock();

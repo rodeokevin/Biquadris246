@@ -11,17 +11,9 @@ void TextObserver::notify() {
     out << "Score:    " << game->getScore(1) << "     "
         << "Score:    " << game->getScore(2) << endl;
     out << "-----------     -----------" << endl;
-    // Body (the board) [TODO: optimize how we output? if it is Player1's turn, don't loop Player 2's board]
-    for (int i = 0; i < 15; ++i) {
-        for (int j = 0; j < 11; ++j) {
-            out << game->getState(1, i, j); // State of p1
-        }
-        cout << "     ";
-        for (int j = 0; j < 11; ++j) {
-            out << game->getState(2, i, j); // State of p2
-        }
-        out << endl;
-    }
+    
+    printNormal();
+
     // Footer
     out << "-----------     -----------" << endl;
     out << "Next:      " << "     "
@@ -53,3 +45,43 @@ void TextObserver::notify() {
         out << "       " << endl;
     }
 }
+
+void TextObserver::printNormal() {
+    // Body (the board) [TODO: optimize how we output? if it is Player1's turn, don't loop Player 2's board]
+    for (int i = 0; i < 15; ++i) {
+        for (int j = 0; j < 11; ++j) {
+            out << game->getState(1, i, j); // State of p1
+        }
+        cout << "     ";
+        for (int j = 0; j < 11; ++j) {
+            out << game->getState(2, i, j); // State of p2
+        }
+        out << endl;
+    }
+}
+
+void TextObserver::printBlind() {
+    // Body (the board) [TODO: optimize how we output? if it is Player1's turn, don't loop Player 2's board]
+    for (int i = 0; i < 15; ++i) {
+        for (int j = 0; j < 11; ++j) {
+            if (j >= 2 && j <= 8 && i >= 2 && i <= 11) {
+                out << '?';
+            }
+            else {
+                out << game->getState(1, i, j); // State of p1
+            }
+        }
+        cout << "     ";
+        for (int j = 0; j < 11; ++j) {
+            if (j >= 2 && j <= 8 && i >= 2 && i <= 11) {
+                out << '?';
+            }
+            else {
+                out << game->getState(2, i, j); // State of p2
+            }
+        }
+        out << endl;
+    }
+}
+
+

@@ -19,8 +19,6 @@ void Player::setNoRand(std::string s) { l->setNoRand(s); }
 
 void Player::setRand() { l->setRand(); }
 
-void Player::updateScore(int inc) { score += inc; }
-
 char Player::getBlock() const { return l->produceBlock(); }
 
 void Player::addSpecAct(bool lastWholeTurn, std::string specAct) {
@@ -30,15 +28,31 @@ void Player::addSpecAct(bool lastWholeTurn, std::string specAct) {
 void Player::clearSpecAct() { activeSpecAct.clear(); }
 
 void Player::restart() {
-    updateScore(-score);
+    score = 0;
     setLevel(getLevel());
     clearSpecAct();
     lvl4LastClearRow = 0;
 }
 
-bool Player::turnEnd(bool clearedRow) {
-    // if we are on Level 4 and
-    if (l->getLevel() >= 4 && clearedRow) lvl4LastClearRow = 0;
+void Player::scoreRow(int rowsCleared) {
+    if (rowsCleared) {
+        score += (l->getLevel() + rowsCleared) * (l->getLevel() + rowsCleared);
+    }
+}
+
+void Player::scoreBlock(int origLvl) {
+    score += (origLvl + 1) * (origLvl + 1);
+}
+
+bool Player::turnEnd(int rowsCleared) {
+    // increasing the score based on row clearing
+    scoreRow(rowsCleared);
+
+    // if we are on Level 4 and we've cleared at least one row, we can reset the
+    // penalty counter
+    if (l->getLevel() >= 4 && rowsCleared) lvl4LastClearRow = 0;
+    // if we are on Level 4 but did not clear a row, we increment the penalty
+    // counter
     else if (l->getLevel() >= 4) {
         ++lvl4LastClearRow;
 
