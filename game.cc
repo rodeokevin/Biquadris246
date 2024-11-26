@@ -113,9 +113,9 @@ void Game::restart() {
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
     if (currPlayerIdx == 0)
-        return board1->addStartBlock();
+        return board1->dropStarBlock();
     else
-        return board2->addPenaltyBlock();
+        return board2->dropStarBlock();
 }
 
 // prompts the current player if they cleared more than 1 row this turn to pick
@@ -164,7 +164,7 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
     // I-block, allows at most 4 rows to be cleared, which is at most 3 special
     // actions
     for (auto it1 = specActs.begin(); it1 != specActs.end(); ++it1) {
-        for (auto it2 = std::next(it, 1); it2 != specActs.end();) {
+        for (auto it2 = std::next(it1, 1); it2 != specActs.end();) {
             if (*it1 == *it2) {
                 specActs.erase(it2);
                 removedDup = true;
@@ -193,8 +193,6 @@ void Game::play() {
     // most of the end of turn mechanics not done by 'playTurn()', such as
     // prompting for special actions
     while (playTurn(currTurnRowsCleared, currPlayLose, activeSpecActs)) {
-        activeSpecActs = promptForSpecAct(currTurnRowsCleared);
-
         // Two ways the current Player can lose:
         // 1. The player had 'force' imposed on them, causing them to lose.
         // 2. During Level 4, the 1 by 1 block cannot be dropped upon the player
@@ -221,6 +219,8 @@ void Game::play() {
                 break;
         }
 
+        activeSpecActs = promptForSpecAct(currTurnRowsCleared);
+
         // reset the number of rows cleared for the next player's turn
         currTurnRowsCleared = 0;
     }
@@ -243,13 +243,17 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // applying the active special actions, and in the case that 'force' causes
     // the Player to lose, we immediately end the turn, but return true as the
     // player(s) can decide whether to restart
-    if (!applySpecAct(specActs)) return true;
+    if (!applySpecAct(specActs)) {
+        currPlayerLose = true;
+        return true;
+    }
     // prompt observers to display the Boards
     notifyDisplays();
 
+    std::string command = ci->parseCommand();
+
     // playing through the turn until we either get EOF or the 'drop' command
-    while (true) {
-        std::string command = ci->parseCommand();
+    while (command != "drop") {
         // immediately end the turn, and return to the main playing loop to execute
         // end of turn mechanics
         if (command == "drop") {
@@ -273,6 +277,9 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             notifyDisplays();
             break;
         }
+
+        // getting the command for the next move
+        command = ci->parseCommand();
     }
 
     // if we did not reach EOF (the player explicitly called "drop" or one of the
@@ -286,7 +293,11 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
 
     // as long as it is not EOF ('command' is the empty string), then we can
     // continue playing
-    return command == "";
+    return true;
+}
+
+bool Game::applyLevelHeavy() {
+    
 }
 
 // tells the text and graphical observers to display the Boards, when appropriate

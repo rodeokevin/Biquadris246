@@ -75,6 +75,10 @@ class Game : public Subject {
     // return False to indicate that the drop has been automatically dropped
     // without needing the 'drop' command being executed
     bool applyLevelHeavy();
+    // similar to a Level's Heavy property, we apply the Heavy special action if
+    // necessary, returns True if the 'down' command does not make a Block dropped
+    // and False if the Block becomes dropped
+    bool applySpecActHeavy();
     // when this method is called, we notify the appropriate observers to display
     // the board
     void notifyDisplays();

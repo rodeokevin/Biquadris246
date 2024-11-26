@@ -34,13 +34,11 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
 
     commands["levelup"] = [this]() {
         Player* p = this->game->getCurrentPlayer();
-        int newLevel = p->getLevel() < 4 ? p->getLevel() + 1 : p->getLevel();
-        p->setLevel(newLevel);
+        p->setLevel(p->getLevel() + 1);
     };
     commands["leveldown"] = [this]() {
         Player* p = this->game->getCurrentPlayer();
-        int newLevel = p->getLevel() > 0 ? p->getLevel() - 1 : p->getLevel();
-        p->setLevel(newLevel);
+        p->setLevel(p->getLevel() - 1);
     };
     commands["norandom"] = [this]() {
         string fileName;
