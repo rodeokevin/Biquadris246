@@ -35,6 +35,8 @@ void Board::setNewNextBlock(std::shared_ptr<Block> block) {
     nextBlock = block;
 }
 
+std::shared_ptr<Block> Board::getBoardNextBlock() { return nextBlock; }
+
 // Check whether a Block can be placed at the starting position
 bool Board::tryPlaceBlock() {
     for (const auto& tile : currentBlock->getCoords()) {

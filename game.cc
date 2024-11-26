@@ -3,7 +3,7 @@
 #include "board.h"
 
 Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
-    : textOnly{textOnly}, hiScore{0}, currPlayerIdx{0} {
+    : textOnly{textOnly}, heavySpecAct{false}, hiScore{0}, currPlayerIdx{0} {
     // setting up the players
     p1 = std::make_unique<Player>(seq1, startLevel);
     p2 = std::make_unique<Player>(seq2, startLevel);
@@ -49,13 +49,41 @@ int Game::getPlayerTurn() const {
     return currPlayerIdx;
 }
 
-void Game::switchPlayerTurn() {
+bool Game::switchPlayerTurn() {
+    // clearing any special actions active on our current player
+    clearSpecAct();
+    // updating the hi score when the turn ends
+    updateHiScore();
+    // updating Player's Blocks for the next turn, displaying the changes to the
+    // Board, and determining whether they have lost
+    bool playerLost = updateBlock();
+
     // updating the Player pointer
     if (currPlayerIdx = 0) currPlayerPointer = p2.get();
     else currPlayerPointer = p1.get();
 
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
+
+    return playerLost;
+}
+
+bool Game::updateBlock() {
+    getBoard()->setNewCurrentBlock(getBoard()->getBoardNextBlock());
+    getBoard()->setNewNextBlock(createBlock(currPlayerPointer->getBlock()));
+
+    bool success = getBoard()->tryPlaceBlock();
+
+    // if it is possible to place the Block in its initial position, we place it
+    // and display the changes
+    if (success) {
+        getBoard()->placeBlock();
+        notifyDisplays();
+    }
+
+    // since we wish to return whether the current player has lost, we return
+    // the opposite of whether the initial Block placement was successful
+    return !success;
 }
 
 Board* Game::getBoard() const {
@@ -69,6 +97,7 @@ void Game::restart() {
     currPlayerPointer = p1.get();
     board1 = std::make_unique<Board>(this);
     board2 = std::make_unique<Board>(this);
+    clearSpecAct();
 }
 
 // Tries to drop a 1-by-1 block in the middle column of the current player's board.
@@ -81,7 +110,7 @@ bool Game::addPenalty() {
 
 // prompts the current player if they cleared more than 1 row this turn to pick
 // one or more special actions, depending on the number of rows cleared
-void Game::promptForSpecAct(int rowsCleared) {
+std::vector<std::string> Game::promptForSpecAct(int rowsCleared) {
     const int numOfSpecAct = rowsCleared - SPECIAL_ACTION_THRES;
     std::vector<std::string> validInputSpecAct;
 
@@ -103,6 +132,8 @@ void Game::promptForSpecAct(int rowsCleared) {
             checkDupSpecAct(validInputSpecAct);
         }
     }
+
+    return validInputSpecAct;
 }
 
 void Game::promptValSpecAct(std::vector<std::string>& specActs) {
@@ -118,7 +149,7 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
     // actions at a time, technically at most 3 since as the tallest block, the
     // I-block, allows at most 4 rows to be cleared, which is at most 3 special
     // actions
-    for (auto it1 = specActs.begin(); it != specActs.end(); ++it) {
+    for (auto it1 = specActs.begin(); it1 != specActs.end(); ++it1) {
         for (auto it2 = std::next(it, 1); it2 != specActs.end();) {
             if (*it1 == *it2){
                 specActs.erase(it2);
@@ -129,7 +160,7 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
         }
     }
 
-    if (removedDup) cout << "Removed duplicate special actions.\n";
+    if (removedDup) std::cout << "Removed duplicate special actions.\n";
 }
 
 // overall method to play the game, uses helper functions for different parts of
@@ -138,42 +169,133 @@ void Game::play() {
     int currTurnRowsCleared = 0;
     bool currPlayLose = false;
 
-    while (playTurn(currTurnRowsCleared, currPlayLose)) {
-        promptForSpecAct(currTurnRowsCleared);
+    // setting up both Board for the first turn
+    gameInit();
 
-        // there are two ways the current player could have lost: their starting
-        // block could not be initiated, or during Level 4, the 1 by 1 block
-        // cannot be dropped upon the player incurring the Level 4 penalty ('turnEnd()'
-        // returns True when the current player incurs the Level 4 penalty and
-        // 'addPenalty()' returns False when the 1 by 1 block was not dropped
-        // successfully, meaning that column was full prior to the block's addition,
-        // and adding another one caused the current player to lose)
-        if (currPlayLose || currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) {
-            // the only course of action is to verify whether the player(s) still
-            // wish to continue playing, meaning they must enter the 'restart'
-            // command, and all other commands pertaining to board and block
-            // movements themselves do nothing, such as 'left', 'I', etc., though
-            // setting
-            std::string s;
-            bool gameRestart = false;
+    // storing the active special actions for the next player
+    std::vector<std::string> activeSpecActs;
 
-            while (std::getline(std::cin, s)) {
-                if (ci->checkForRestart(s)) {
-                    gameRestart = true;
-                    break;
-                }
-            }
+    // the 'while' loop condition plays the turn, while the loop content performs
+    // most of the end of turn mechanics not done by 'playTurn()', such as
+    // prompting for special actions
+    while (playTurn(currTurnRowsCleared, currPlayLose, activeSpecActs)) {
+        activeSpecActs = promptForSpecAct(currTurnRowsCleared);
 
+        // Two ways the current Player can lose:
+        // 1. The player had 'force' imposed on them, causing them to lose.
+        // 2. During Level 4, the 1 by 1 block cannot be dropped upon the player
+        //    incurring the Level 4 penalty ('turnEnd()' returns True when the
+        //    current player incurs the Level 4 penalty and 'addPenalty()' returns 
+        //    False when the 1 by 1 block was not dropped successfully, meaning
+        //    that column was full prior to the block's addition, and adding
+        //    another one caused the current player to lose),
+        // 3. Upon exiting their turn and setting up for when they can play
+        //    again, their next dropped Block cannot be placed.
+        if (currPlayLose ||
+            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) ||
+            switchPlayerTurn()) {
+            bool gameRestart = checkForGameReset();
+
+            // If the player(s) do wish to restart the game, then we do so, and
+            // continue this 'while' loop. Otherwise, we simply break out of it,
+            // and terminate the program.
             if (gameRestart) {
+                currPlayLose = false;
                 restart();
                 continue;
             } else break;
         }
-
-        switchPlayerTurn();
+        
         // reset the number of rows cleared for the next player's turn
         currTurnRowsCleared = 0;
     }
+}
+
+void Game::gameInit() {
+    board1->setNewCurrentBlock(createBlock(p1->getBlock()));
+    board1->setNewNextBlock(createBlock(p1->getBlock()));
+    board2->setNewCurrentBlock(createBlock(p2->getBlock()));
+    board2->setNewNextBlock(createBlock(p2->getBlock()));
+}
+
+// Most of the mechanics for a player's turn. Some of the things done by this
+// method:
+// - Applying any Heavy properties, whether it be from Level or a special action
+// - Updating the number of rows cleared by the Player this turn.
+// This method runs essentially until EOF or the Player executes a 'drop' command,
+// or one of the 'heavy' properties force the player's block to be dropped.
+bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::string> specActs) {
+    // applying the active special actions, and in the case that 'force' causes
+    // the Player to lose, we immediately end the turn, but return true as the
+    // player(s) can decide whether to restart
+    if (!applySpecAct(specActs)) return true;
+    // prompt observers to display the Boards
+    notifyDisplays();
+
+    std::string command;
+
+    // playing through the turn until we either get EOF or the 'drop' command
+    while (ci->parseCommand(command)) {
+        // immediately end the turn, and return to the main playing loop to execute
+        // end of turn mechanics
+        if (command == "drop") {
+            notifyDisplays();
+            break;
+        }
+
+        // in the case where we have the 'restart' command executed, we must also
+        // break out of the loop
+        if (command == "restart") {
+            notifyDisplays();
+            break;
+        }
+
+        // ADD THE CASE WHERE WE CHANGE THE BLOCK TO A NEW ONE (FOR TESTING PURPOSES,
+        // THOUGH COULD STILL CAUSE A LOSS TECHNICALLY)
+
+        // if we have a moving command other than 'drop', we must possibly apply
+        // one of or both of the Heavy properties
+        if (isMovingCom(command) && !applyLevelHeavy()) {
+            notifyDisplays();
+            break;
+        }
+    }
+
+    // if we did not reach EOF (the player explicitly called "drop" or one of the
+    // Heavy properties forced their turn to end), we display the updated end of
+    // turn Boards
+    if (command == "drop") {
+        // storing the number of rows cleared during this turn
+        rowsCleared = getBoard()->clearFullRows();
+        notifyDisplays();
+    }
+    
+    // as long as it is not EOF ('command' is the empty string), then we can
+    // continue playing
+    return command == "";
+}
+
+// tells the text and graphical observers to display the Boards, when appropriate
+void Game::notifyDisplays() {
+    // notify text display by default
+
+    // if the game is not in text-only, we also open/update the graphical display
+    if (!textOnly) {}
+}
+
+bool Game::checkForGameReset() {
+    // prompt text and graphical (if applicable) observers to display a Game Won
+    // message, the only acceptable inputs are Y and N
+
+    std::string s;
+
+    while (ci->checkForGameReset(s)) {
+        if (s == "yes" || s == "restart") return true;
+        else if (s == "no") return false;
+    }
+
+    // EOF without obtaining a valid input (if any), by default we quit the Game
+    return false;
 }
 
 void Subject::attach(Observer* o) {
