@@ -8,7 +8,7 @@
 #include "observer.h"
 #include "tile.h"
 #include "player.h"
-#include "commandInterpreter.h"
+// #include "commandInterpreter.h"
 
 class Observer;  // forward declaration
 
@@ -37,13 +37,13 @@ class Game : public Subject {
     // update 'currPlayerIdx' using: currPlayerIdx = 1 - currPlayerIdx, like
     // taking the NOT of a bit
     int currPlayerIdx;
-    std::unique_ptr<Player> p1, p2;
+    std::unique_ptr<Player> p0, p1;
     // raw pointer pointing to the current player, makes it easier to access the
     // actual Player object instead, and relies on 'currPlayerIdx' integer to
     // switch between the two players easily
     Player* currPlayerPointer;
-    std::unique_ptr<Board> board1, board2;
-    std::unique_ptr<CommandInterpreter> ci;
+    std::unique_ptr<Board> board0, board1;
+    /*std::unique_ptr<CommandInterpreter> ci;*/ // ADD THIS BACK LATER
 
     // private methods, mechanics to allow our game to run
     void updateHiScore();
@@ -102,7 +102,7 @@ class Game : public Subject {
     std::shared_ptr<Block> createBlock(const char block);
 
    public:
-    Game(bool textOnly, int seed, string seq1, string seq2, int startLevel);  // Ctor
+    Game(bool textOnly, int seed, string seq0, string seq1, int startLevel);  // Ctor
 
     // Accessors (and settors?)
     int getLevel(int player) const;
