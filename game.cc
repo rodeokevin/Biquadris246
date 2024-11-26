@@ -4,46 +4,45 @@
 
 #include "board.h"
 
-Game::Game(bool textOnly, int seed, string seq1, string seq2, int startLevel)
+Game::Game(bool textOnly, int seed, string seq0, string seq1, int startLevel)
     : textOnly{textOnly}, heavySpecAct{false}, hiScore{0}, currPlayerIdx{0} {
     // setting up the players
+    p0 = std::make_unique<Player>(seq0, startLevel);
     p1 = std::make_unique<Player>(seq1, startLevel);
-    p2 = std::make_unique<Player>(seq2, startLevel);
     currPlayerPointer = p1.get();
     // setting up the board for each player, though they do not actually have
     // access to their associated player
+    board0 = std::make_unique<Board>(this);
     board1 = std::make_unique<Board>(this);
-    board2 = std::make_unique<Board>(this);
     // initializing the command interpreter
     ci = std::make_unique<CommandInterpreter>();
 }
 
 // Get the state of one of the Boards
-char Game::getState(int board, int row, int col) const {
-    if (board == 1) {
-        return board1->charAt(row, col);
+char Game::getState(int currPlayerIdx, int row, int col) const {
+    if (currPlayerIdx == 0) {
+        return board0->charAt(row, col);
     } else {
-        return board2->charAt(row, col);
+        return board1->charAt(row, col);
     }
 }
 
 Block* Game::getNextBlock(int player) {
-    return (player == 1) ? board1->nextBlock.get() : board2->nextBlock.get();
+    return (player == 0) ? board0->nextBlock.get() : board1->nextBlock.get();
 }
 
 int Game::getLevel(int player) const {
-    return (player == 1) ? p1->getLevel() : p2->getLevel();
+    return (player == 0) ? p0->getLevel() : p1->getLevel();
 }
 
 int Game::getScore(int player) const {
-    return (player == 1) ? p1->getScore() : p2->getScore();
+    return (player == 0) ? p0->getScore() : p1->getScore();
 }
 
-void Game::updateHiScore() { hiScore = max(hiScore, max(p1->getScore(), p2->getScore())); }
+void Game::updateHiScore() { hiScore = max(hiScore, max(p0->getScore(), p1->getScore())); }
 
 void Game::updateScoreDestroyedBlock(int origLvl) {
     currPlayerPointer->scoreBlock(origLvl);
-
     updateHiScore();
 }
 
@@ -65,10 +64,8 @@ bool Game::switchPlayerTurn() {
     bool playerLost = updateBlock();
 
     // updating the Player pointer
-    if (currPlayerIdx = 0)
-        currPlayerPointer = p2.get();
-    else
-        currPlayerPointer = p1.get();
+    if (currPlayerIdx == 0) currPlayerPointer = p1.get();
+    else currPlayerPointer = p0.get();
 
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
@@ -105,16 +102,16 @@ std::shared_ptr<Block> Game::createBlock(char block) {
 }
 
 Board* Game::getBoard() const {
-    return currPlayerIdx == 0 ? board1.get() : board2.get();
+    return currPlayerIdx == 0 ? board0.get() : board1.get();
 }
 
 void Game::restart() {
     currPlayerIdx = 0;
+    p0->restart();
     p1->restart();
-    p2->restart();
-    currPlayerPointer = p1.get();
+    currPlayerPointer = p0.get();
+    board0 = std::make_unique<Board>(this);
     board1 = std::make_unique<Board>(this);
-    board2 = std::make_unique<Board>(this);
     clearSpecAct();
 }
 
@@ -122,10 +119,8 @@ void Game::restart() {
 // Returns True if successful, and False otherwise (the player loses, since the
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
-    if (currPlayerIdx == 0)
-        return board1->dropStarBlock();
-    else
-        return board2->dropStarBlock();
+    if (currPlayerIdx == 0) return board0->dropStarBlock();
+    else return board1->dropStarBlock();
 }
 
 // prompts the current player if they cleared more than 1 row this turn to pick
@@ -207,6 +202,7 @@ void Game::play() {
         // 1. The player had 'force' imposed on them, causing them to lose.
         // 2. During Level 4, the 1 by 1 block cannot be dropped upon the player
         //    incurring the Level 4 penalty ('turnEnd()' returns True when the
+        //    current player incurs the Level 4 penalty and 'getBoard()->dropStarBlock()' returns 
         //    current player incurs the Level 4 penalty and 'addPenalty()' returns
         //    False when the 1 by 1 block was not dropped successfully, meaning
         //    that column was full prior to the block's addition, and adding
@@ -214,7 +210,7 @@ void Game::play() {
         // 3. Upon exiting their turn and setting up for when they can play
         //    again, their next dropped Block cannot be placed.
         if (currPlayLose ||
-            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) ||
+            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !getBoard()->dropStarBlock()) ||
             switchPlayerTurn()) {
             bool gameRestart = checkForGameReset();
 
@@ -237,10 +233,8 @@ void Game::play() {
 }
 
 void Game::gameInit() {
+    board0->setNewCurrentBlock(createBlock(p0->getBlock()));
     board1->setNewCurrentBlock(createBlock(p1->getBlock()));
-    board1->setNewNextBlock(createBlock(p1->getBlock()));
-    board2->setNewCurrentBlock(createBlock(p2->getBlock()));
-    board2->setNewNextBlock(createBlock(p2->getBlock()));
     notifyDisplays();
 }
 
