@@ -9,6 +9,9 @@ Board::Board(){
     // Set all to blank initially
     for (int i = 0; i < ROWS; ++i) {
         for (int j = 0; j < COLS; ++j) {
+            Tile blankTile{' ', false, nullptr};
+            grid[i][j] = blankTile;
+            /*
             if (j % 2 == 0) {
                 Tile blankTile{'#', false, nullptr};
                 grid[i][j] = blankTile;
@@ -17,6 +20,7 @@ Board::Board(){
                 Tile blankTile{'@', false, nullptr};
                 grid[i][j] = blankTile;
             }
+            */
         }
     }
 }
@@ -142,10 +146,10 @@ void Board::dropBlock() {
 // Clear any full rows and shift above Tile downwards if needed
 int Board::clearFullRows() {
     int clearedRows = 0;
-    int row = 14;
+    int row = ROWS-1;
     while (row > 0) {
         bool isRowFull = true;
-        for (int i = 0; i < 11; ++i) {
+        for (int i = 0; i < COLS; ++i) {
             if (grid[row][i].getSymbol() == ' ') {
                 isRowFull = false;
             }
@@ -168,7 +172,7 @@ int Board::clearFullRows() {
 void Board::shiftDown(int i){
     Tile blankTile{' ', false, nullptr};
     for (int j = i; j > 0; --j) {
-        for (int k = 0; k < 11; k++) {
+        for (int k = 0; k < COLS; k++) {
             grid[j][k] = grid[j-1][k];
             grid[j-1][k] = blankTile;
         }
@@ -184,6 +188,22 @@ void Board::clearBoard() {
             Tile blankTile{' ', false, nullptr};
                 grid[i][j] = blankTile;
         }
+    }
+}
+
+bool Board::dropStarBlock() {
+    std::shared_ptr<Block> star = std::make_shared<StarBlock>();
+    std::shared_ptr<Block> temp = currentBlock; // temporarily hold the currentBlock to not lose it
+    currentBlock = star;
+    if (!tryPlaceBlock()) {
+        currentBlock = temp;
+        return false;
+    }
+    else {
+        placeBlock();
+        dropBlock();
+        currentBlock = temp;
+        return true;
     }
 }
 
