@@ -136,9 +136,39 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
 // the game, such as a turn, end of a turn, and so on
 void Game::play() {
     int currTurnRowsCleared = 0;
+    bool currPlayLose = false;
 
-    while (playTurn(currTurnRowsCleared)) {
+    while (playTurn(currTurnRowsCleared, currPlayLose)) {
         promptForSpecAct(currTurnRowsCleared);
+
+        // there are two ways the current player could have lost: their starting
+        // block could not be initiated, or during Level 4, the 1 by 1 block
+        // cannot be dropped upon the player incurring the Level 4 penalty ('turnEnd()'
+        // returns True when the current player incurs the Level 4 penalty and
+        // 'addPenalty()' returns False when the 1 by 1 block was not dropped
+        // successfully, meaning that column was full prior to the block's addition,
+        // and adding another one caused the current player to lose)
+        if (currPlayLose || currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) {
+            // the only course of action is to verify whether the player(s) still
+            // wish to continue playing, meaning they must enter the 'restart'
+            // command, and all other commands pertaining to board and block
+            // movements themselves do nothing, such as 'left', 'I', etc., though
+            // setting
+            std::string s;
+            bool gameRestart = false;
+
+            while (std::getline(std::cin, s)) {
+                if (ci->checkForRestart(s)) {
+                    gameRestart = true;
+                    break;
+                }
+            }
+
+            if (gameRestart) {
+                restart();
+                continue;
+            } else break;
+        }
 
         switchPlayerTurn();
         // reset the number of rows cleared for the next player's turn

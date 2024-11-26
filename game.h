@@ -45,8 +45,9 @@ class Game : public Subject {
     void updateHiScore();
     // Returns TRUE when the turn ended successfully, meaning it is now the next
     // player's turn, and FALSE when EOF is reached. Directly mutates the argument
-    // to indicate how many rows the player has cleared on their turn.
-    bool playTurn(int& currTurnRowsCleared);
+    // to indicate how many rows the player has cleared on their turn. Also
+    // indicates whether the current player has lost.
+    bool playTurn(int& currTurnRowsCleared, bool& currPlayLost);
     // prompting the player to choose special action(s) depending on 'rowsCleared'
     void promptForSpecAct(int rowsCleared);
     // obtaining valid input from the player when prompting them for special
