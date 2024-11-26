@@ -113,7 +113,7 @@ void Game::restart() {
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
     if (currPlayerIdx == 0)
-        return board1->addPenaltyBlock();
+        return board1->addStartBlock();
     else
         return board2->addPenaltyBlock();
 }
@@ -247,10 +247,9 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // prompt observers to display the Boards
     notifyDisplays();
 
-    std::string command;
-
     // playing through the turn until we either get EOF or the 'drop' command
-    while (ci->parseCommand(command)) {
+    while (true) {
+        std::string command = ci->parseCommand();
         // immediately end the turn, and return to the main playing loop to execute
         // end of turn mechanics
         if (command == "drop") {
