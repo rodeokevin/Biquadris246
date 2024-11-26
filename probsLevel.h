@@ -29,6 +29,11 @@ class ProbsLevel: public Level {
         void setNoRand(std::string sequence = "") override;
         void setRand() override;
         char produceBlock() override;
+        // getters used when switching between levels, to keep the previous level's
+        // randomizing settings
+        bool isNoRand();
+        std::string noRandSeq();
+        // dtor
         ~ProbsLevel();
 };
 

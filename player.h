@@ -5,6 +5,7 @@
 #include "probsOfLevels.h"
 #include <string>
 #include <memory>
+#include <cmath>
 
 class Player {
     const int LOWEST_LVL = 0, HIGHEST_LVL = 4, PENALTY_TURNS = 5;
@@ -21,6 +22,9 @@ class Player {
     // PUT THIS INTO BOARD
     std::vector<std::pair<bool, std::string>> activeSpecAct;
 
+    // scoring based on row clearing
+    void scoreRow(int rowsCleared);
+
     public:
         // ctor
         Player(std::string s, int startLevel);
@@ -33,7 +37,6 @@ class Player {
         void setNoRand(std::string s = "");
         // 'random' command used
         void setRand();
-        void updateScore(int inc);
         char getBlock() const;
         // CHANGE THIS SUCH THAT BOARD ITSELF STORES THE SPECIAL ACTION
         void addSpecAct(bool lastWholeTurn, std::string specAct);
@@ -41,7 +44,9 @@ class Player {
         // when the 'restart' command is used
         void restart();
         // end of the player's turn
-        bool turnEnd(bool clearedRow);
+        bool turnEnd(int rowsCleared);
+        // scoring based on block clearing
+        void scoreBlock(int origLvl);
 };
 
 #endif

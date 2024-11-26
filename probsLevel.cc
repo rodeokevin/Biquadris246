@@ -2,7 +2,7 @@
 #include <iostream>
 
 ProbsLevel::ProbsLevel(const int l, const std::vector<float> p):
-    Level{l}, probs(NUM_BLOCKS, 0), noRand{false} {
+    Level{l}, probs(NUM_BLOCKS, 0), noRand{false}, seq{""} {
     int OTHER_BLOCKS = NUM_BLOCKS;
     float leftover = total;
 
@@ -93,6 +93,10 @@ char ProbsLevel::produceNoRandBlock() {
     // as input
     return 0;
 }
+
+bool ProbsLevel::isNoRand() { return noRand; }
+
+std::string ProbsLevel::noRandSeq() { return seq; }
 
 ProbsLevel::~ProbsLevel() {
     if (f.is_open()) f.close();
