@@ -11,6 +11,7 @@ class Board {
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
     std::shared_ptr<Block> currentBlock;
     std::shared_ptr<Block> nextBlock;
+    bool isBlindBoard;
 
     bool tryMoveBlock(string dir); // Check if a Block can move (dir is "l", "r" or "d")
     bool tryRotateBlock(string dir); // Check if a Block can rotate (dir is either "CW" or "CCW")
@@ -39,6 +40,8 @@ class Board {
         void clearBoard(); // Set all Tiles to blank Tiles
 
         bool dropStarBlock(); // Drops a StarBlock down the middle. Returns false if can't be placed
+        void setBlind(const bool blind);
+        bool isBlind();
 };
 
 #endif

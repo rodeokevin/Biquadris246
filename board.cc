@@ -4,7 +4,7 @@
 #include <memory>
 
 // Constructor
-Board::Board(){
+Board::Board(): isBlindBoard{false} {
     grid.resize(ROWS, std::vector<Tile>(COLS));
     // Set all to blank initially
     for (int i = 0; i < ROWS; ++i) {
@@ -207,3 +207,6 @@ bool Board::dropStarBlock() {
     }
 }
 
+void Board::setBlind(const bool blind) { isBlindBoard = blind; }
+
+bool Board::isBlind() { return isBlindBoard; }

@@ -36,7 +36,7 @@ class Game : public Subject {
     const int HEAVY_SPEC_ACT_DOWN = 2;
     // 'heavySpecAct' is true when the current board has the Heavy special action
     // applied to it
-    bool textOnly, heavySpecAct;
+    bool heavySpecAct;
     int hiScore;
     // update 'currPlayerIdx' using: currPlayerIdx = 1 - currPlayerIdx, like
     // taking the NOT of a bit
@@ -70,27 +70,23 @@ class Game : public Subject {
     // the specified block, used for testing purposes and the 'force' special
     // action
     void setCurrBlock(const char block);
-    // Given a command, if it updates the Board, we display the changes, and check
-    // whether we must apply any of the Heavy properties (applies them if needed).
-    // Returns True if the current Player's turn has ended, and false otherwise.
-    // Also directly mutates the given boolean to indicate whether the current
-    // player has lost (a turn ends when a player has lost). Commands that do not
-    // update the Board directly, such as norandom, sequence, etc. make this 
-    // method return false.
-    bool commandUpdatesBoard(std::string command, bool& currPlayerLose);
+    // Given a command, we check whether we must apply any of the Heavy properties
+    // (applies them if needed). Returns True if the current Player's turn has ended,
+    // and false otherwise. Also directly mutates the given boolean to indicate
+    // whether the current player has lost (a turn ends when a player has lost).
+    // Commands that do not update the Board directly, such as norandom, sequence,
+    // etc. make this method return false.
+    bool updateBoard(std::string command, bool& currPlayerLose);
     // determining whether a command is a moving command, excluding 'drop',
     // meant to be used to check whether we must apply the 'heavy' property of
     // Levels 3 and higher
-    bool isMovingCom(const std::string com);
+    bool isMovingCom(const std::string com) const;
     // If applicable, we must apply the 'heavy' property to the moved blocks,
     // returns True if the 'down' command calls were successful, otherwise we
     // return False to indicate that the drop has been automatically dropped
     // without needing the 'drop' command being executed. This is used for both
     // the Level and Special Action 'Heavy'
     bool applyHeavy();
-    // when this method is called, we notify the appropriate observers to display
-    // the board
-    void notifyDisplays();
     // prompting the player to choose special action(s) depending on 'rowsCleared'
     std::vector<std::string> promptForSpecAct(int rowsCleared);
     // obtaining valid input from the player when prompting them for special
@@ -103,7 +99,7 @@ class Game : public Subject {
     // currently only last one turn for a player. Returns true if adding the
     // special actions does not cause the affected Player to lose ('force' may
     // cause the Player to lose)
-    bool applySpecAct(std::vector<std::string> specActs);
+    bool addSpecActs(std::vector<std::string> specActs);
     void clearSpecAct();
     // method to add the penalty 1-by-1 block for the current player if they
     // were unable to clear a block within 5 turns when in Level 4
@@ -115,7 +111,7 @@ class Game : public Subject {
     std::shared_ptr<Block> createBlock(const char block);
 
    public:
-    Game(bool textOnly, int seed, string seq0, string seq1, int startLevel);  // Ctor
+    Game(int seed, string seq0, string seq1, int startLevel);  // Ctor
 
     // Accessors (and settors?)
     int getLevel(int player) const;

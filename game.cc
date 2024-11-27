@@ -4,8 +4,8 @@
 
 #include "board.h"
 
-Game::Game(bool textOnly, int seed, string seq0, string seq1, int startLevel)
-    : textOnly{textOnly}, heavySpecAct{false}, hiScore{0}, currPlayerIdx{0} {
+Game::Game(int seed, string seq0, string seq1, int startLevel)
+    : heavySpecAct{false}, hiScore{0}, currPlayerIdx{0} {
     // setting up the players
     p0 = std::make_unique<Player>(seq0, startLevel);
     p1 = std::make_unique<Player>(seq1, startLevel);
@@ -83,7 +83,7 @@ bool Game::updateBlock() {
     // and display the changes
     if (success) {
         getBoard()->placeBlock();
-        notifyDisplays();
+        notifyObservers();
     }
 
     // since we wish to return whether the current player has lost, we return
@@ -92,13 +92,13 @@ bool Game::updateBlock() {
 }
 
 std::shared_ptr<Block> Game::createBlock(char block) {
-    if (block == 'I') return make_shared<IBlock>();
-    else if (block == 'J') return make_shared<JBlock>();
-    else if (block == 'L') return make_shared<LBlock>();
-    else if (block == 'O') return make_shared<OBlock>();
-    else if (block == 'S') return make_shared<SBlock>();
-    else if (block == 'Z') return make_shared<ZBlock>();
-    else return make_shared<TBlock>();
+    if (block == 'I') return make_shared<IBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'J') return make_shared<JBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'L') return make_shared<LBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'O') return make_shared<OBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'S') return make_shared<SBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'Z') return make_shared<ZBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else return make_shared<TBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
 }
 
 Board* Game::getBoard() const {
@@ -235,7 +235,7 @@ void Game::play() {
 void Game::gameInit() {
     board0->setNewCurrentBlock(createBlock(p0->getBlock()));
     board1->setNewCurrentBlock(createBlock(p1->getBlock()));
-    notifyDisplays();
+    notifyObservers();
 }
 
 // Most of the mechanics for a player's turn. Some of the things done by this
@@ -248,42 +248,100 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // applying the active special actions, and in the case that 'force' causes
     // the Player to lose, we immediately end the turn, but return true as the
     // player(s) can decide whether to restart
-    if (!applySpecAct(specActs)) {
+    if (!addSpecActs(specActs)) {
         currPlayerLose = true;
         return true;
     }
     // prompt observers to display the Boards
-    notifyDisplays();
+    notifyObservers();
 
     std::string command = ci->parseCommand();
 
     // playing through the turn until we either get EOF or the 'drop' command
     while (command != "drop") {
-        // in the case where we have the 'restart' command executed, we must also
-        // break out of the loop
+        // in the case where we have the 'restart' command executed, we must
+        // break out of the loop, as the Player's turn technically ends before
+        // the 'drop' command is made
         if (command == "restart") {
-            notifyDisplays();
+            notifyObservers();
             return true;
         }
         
         // applies the appropriate Heavy effects if necessary, and displays the
         // changes made to the Board
-        if (commandUpdatesBoard(command, currPlayerLose)) return true;
+        if (updateBoard(command, currPlayerLose)) return true;
+
+        notifyObservers();
 
         // getting the command for the next move
         command = ci->parseCommand();
     }
 
     rowsCleared = getBoard()->clearFullRows();
-    notifyDisplays();
+    notifyObservers();
 
     return true;
 }
 
-bool Game::commandUpdatesBoard(std::string command, bool& currPlayerLose) {
+bool Game::updateBoard(std::string command, bool& currPlayerLose) {
     // the only command that has a length of 1 is when we wish to set the currently
     // undropped Block to the specified Block, but this might make the Player lose
-    if (command.size() == 1)
+    if (command.size() == 1) {
+        getBoard()->setNewCurrentBlock(createBlock(command[0]));
+        
+        // try to place the new selected Block
+        if (!getBoard()->tryPlaceBlock()) {
+            // before returning, we output the updated Board, which is essentially
+            // the Board after removing the old replaced Block
+            notifyObservers();
+            // the Player's turn has ended due to them losing
+            currPlayerLose = true;
+            // indicate turn end by returning true
+            return true;
+        }
+
+        getBoard()->placeBlock();
+    // check whether we must apply one or both of the Heavy properties
+    } else if (isMovingCom(command)) {
+        int heavyMoves = 0;
+
+        // if applicable, we must apply the Heavy special action
+        if ((command == "left" || command == "right") && heavySpecAct) heavyMoves += HEAVY_SPEC_ACT_DOWN;
+        // if applicable, we must apply the Level's Heavy property
+        if (getLevel(currPlayerIdx) >= HEAVY_LVL) heavyMoves += HEAVY_LVL_DOWN;
+
+        // apply the Heavy property
+        for (int i = 0; i < heavyMoves; ++i) {
+            // in the case that the Block is dropped due to one or both of the
+            // Heavy properties, we return true to indicate that the Player's
+            // turn has ended before the 'drop' command is executed/given
+            if (!applyHeavy()) return true;
+        }
+    }
+
+    // the given command did not end the player's turn
+    return false;
+}
+
+bool Game::addSpecActs(std::vector<std::string> specActs) {
+    for (auto specAct : specActs) {
+        if (specAct == "blind") getBoard()->setBlind(true);
+        else if (specAct == "heavy") heavySpecAct = true;
+        // case where the special action is force, which may cause a loss for the
+        // Player, so we may return before applying all the special actions
+        else {
+            // remove the currently undropped Block
+            getBoard()->removeBlock();
+
+            // try to place new specified Block
+
+        }
+    }
+}
+
+bool Game::isMovingCom(const std::string command) const {
+    return (command == "left" || command == "right" || command == "down" ||
+            command == "clockwise" || command == "counterclockwise");
 }
 
 bool Game::applyHeavy() {
@@ -295,18 +353,7 @@ bool Game::applyHeavy() {
     // true to signal that the Block is not dropped due to the Level Heavy
     else {
         getBoard()->moveBlock("d");
-        // showing the change
-        notifyDisplays();
         return true;
-    }
-}
-
-// tells the text and graphical observers to display the Boards, when appropriate
-void Game::notifyDisplays() {
-    // notify text display by default
-
-    // if the game is not in text-only, we also open/update the graphical display
-    if (!textOnly) {
     }
 }
 
