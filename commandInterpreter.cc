@@ -125,10 +125,11 @@ string CommandInterpreter::parseCommand(int& multiplier) const {
             // exiting the function, as Game handles this case appropriately
             if (multiplier == 0 && (match == "restart" || match == "norandom" || match == "random")) {
                 commands.at(match)();
-            // otherwise, if the given multiplier is 0, we simply return an
-            // empty string to ensure that Game would not do anything with the
-            // given command, seeing that a zero multiplier is applied
-            } else if (multiplier == 0) return "";
+                // otherwise, if the given multiplier is 0, we simply return an
+                // empty string to ensure that Game would not do anything with the
+                // given command, seeing that a zero multiplier is applied
+            } else if (multiplier == 0)
+                return "";
 
             // otherwise, we apply the command as many times as specified, while
             // also mutated the multiplier to tell Game that we performed a
@@ -150,4 +151,40 @@ string CommandInterpreter::parseCommand(int& multiplier) const {
         std::cout << "Invalid input format: \"" << input << "\". Type 'help' for a list of commands." << std::endl;
         return "";
     }
+}
+
+bool CommandInterpreter::parseSpecialAction(vector<string>& actions) const {
+    cout << "Choose a special action (blind, heavy, force <blockType>): ";
+    string input;
+    getline(cin, input);
+
+    // match the three special actions
+    std::regex blindPattern("^b(l(i(n(d)?)?)?)?$", std::regex::icase);
+    std::regex heavyPattern("^h(e(a(v(y)?)?)?)?$", std::regex::icase);
+    std::regex forcePattern("^f(o(r(c(e)?)?)?)?(\\s+(I|J|L|O|S|Z|T))?$", std::regex::icase);
+
+    if (regex_match(input, blindPattern)) {
+        actions.push_back("blind");
+    } else if (regex_match(input, heavyPattern)) {
+        actions.push_back("heavy");
+    } else if (regex_match(input, forcePattern)) {
+        // extract block type for force
+        std::smatch match;
+        if (regex_search(input, match, forcePattern)) {
+            //
+            if (match[7].matched) {
+                string blockType = match[7].str();
+                actions.push_back(blockType);
+                return true;
+            }
+        }
+        cout << "Invalid block type for 'force'.\n";
+        return false;
+    } else {
+        // invalid input
+        cout << "Invalid special action. No action will be applied.\n";
+        return false;
+    }
+
+    return true;
 }

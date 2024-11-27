@@ -17,9 +17,10 @@ class CommandInterpreter {
 
    public:
     CommandInterpreter(Game* game);
-    ~CommandInterpreter();
+    ~CommandInterpreter() = default;
 
-    string parseCommand(int& multilpier) const;
+    string parseCommand(int& multiplier) const;
+    bool parseSpecialAction(vector<string>& actions) const;
 };
 
 #endif
