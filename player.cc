@@ -1,8 +1,8 @@
 #include "player.h"
 
 Player::Player(std::string s, int startLevel): score{0}, seq{s} {
-    setLevel(startLevel);
     pol = std::make_unique<ProbsOfLevels>();
+    setLevel(startLevel);
 }
 
 void Player::setLevel(int level) {
@@ -21,16 +21,9 @@ void Player::setRand() { l->setRand(); }
 
 char Player::getBlock() const { return l->produceBlock(); }
 
-void Player::addSpecAct(bool lastWholeTurn, std::string specAct) {
-    activeSpecAct.push_back({lastWholeTurn, specAct});
-}
-
-void Player::clearSpecAct() { activeSpecAct.clear(); }
-
 void Player::restart() {
     score = 0;
     setLevel(getLevel());
-    clearSpecAct();
     lvl4LastClearRow = 0;
 }
 

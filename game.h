@@ -25,6 +25,7 @@ class Subject {
 };
 
 class Game : public Subject {
+    const std::string sEOF = "EOF";
     // clearing more than 'SPECIAL_ACTION_THRES' rows allows the current player
     // to pick at least one special action
     const int SPECIAL_ACTION_THRES = 1;
@@ -80,6 +81,9 @@ class Game : public Subject {
     // Commands that do not update the Board directly, such as norandom, sequence,
     // etc. make this method return false.
     bool updateBoard(std::string command, bool& currPlayerLose);
+    // updating the current Player's level depending on the given multiplier
+    void levelUp(int multiplier);
+    void levelDown(int multiplier);
     // determining whether a command is a moving command, excluding 'drop',
     // meant to be used to check whether we must apply the 'heavy' property of
     // Levels 3 and higher

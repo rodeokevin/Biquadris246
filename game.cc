@@ -78,10 +78,7 @@ bool Game::updateBlock() {
 
     // if it is possible to place the Block in its initial position, we place it
     // and display the changes
-    if (success) {
-        getBoard()->placeBlock();
-        notifyObservers();
-    }
+    if (success) getBoard()->placeBlock();
 
     // since we wish to return whether the current player has lost, we return
     // the opposite of whether the initial Block placement was successful
@@ -107,11 +104,12 @@ void Game::restart() {
     p0->restart();
     p1->restart();
     currPlayerPointer = p0.get();
-    board0 = std::make_unique<Board>(this);
-    board1 = std::make_unique<Board>(this);
+    board0 = std::make_unique<Board>();
+    board1 = std::make_unique<Board>();
     clearSpecActs();
     consec_drop0 = 0;
     consec_drop1 = 0;
+    gameInit();
 }
 
 // Tries to drop a 1-by-1 block in the middle column of the current player's board.
@@ -269,19 +267,26 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
         return true;
     }
 
-    int multiplier;
+    int multiplier = 1;
+    std::string filename;
 
-    std::string command = ci->parseCommand(multiplier);
+    std::string command = ci->parseCommand(multiplier, filename);
 
     // playing through the turn until we either get EOF or the 'drop' command
-    while (command != "drop") {
+    while (command != "drop" || multiplier > 0) {
+        if (command == sEOF) return false;
+
         // in the case where we have the 'restart' command executed, we must
         // break out of the loop, as the Player's turn technically ends before
         // the 'drop' command is made
         if (command == "restart") {
-            notifyObservers();
+            restart();
             return true;
-        }
+        } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
+        else if (command == "random") currPlayerPointer->setRand();
+        else if (command == "sequence") {
+        } else if (command == "levelup") levelUp(multiplier);
+        else if (command == "leveldown") levelDown(multiplier);
         
         // Applies the appropriate Heavy effects if necessary, and displays the
         // changes made to the Board. Upon reading a command, if the multiplier
@@ -291,22 +296,36 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
         // command. If the multiplier is -1, it means that the player has added
         // a zero multiplier to their command, so we would do nothing regardless
         // of their command
-        if (multiplier >= 0 && updateBoard(command, currPlayerLose)) return true;
+        else if (multiplier > 0 && updateBoard(command, currPlayerLose)) return true;
 
         notifyObservers();
 
-        // getting the command for the next move
-        command = ci->parseCommand(multiplier);
+        // resetting the multiplier
+        multiplier = 1;
+        // getting the next command
+        command = ci->parseCommand(multiplier, filename);
     }
 
-    // edge case of having a multiplier bigger than 1 applied to the 'drop' command,
-    // where we set up this Player's future turn to immediately drop their Block
-    if (command == "drop" && multiplier > 0) setConsecDrops(multiplier);
+    // once we get here, it means that the drop command was initiated
+    setConsecDrops(multiplier - 1);
+    getBoard()->dropBlock();
 
     rowsCleared = getBoard()->clearFullRows();
     notifyObservers();
 
     return true;
+}
+
+void Game::levelUp(int multiplier) {
+    int lvl = currPlayerPointer->getLevel();
+
+    for (int i = 0; i < multiplier; ++i) currPlayerPointer->setLevel(++lvl);
+}
+
+void Game::levelDown(int multiplier) {
+    int lvl = currPlayerPointer->getLevel();
+
+    for (int i = 0; i < multiplier; ++i) currPlayerPointer->setLevel(--lvl);
 }
 
 bool Game::handleConsecDrops() {
@@ -333,6 +352,7 @@ bool Game::updateBoard(std::string command, bool& currPlayerLose) {
     // the only command that has a length of 1 is when we wish to set the currently
     // undropped Block to the specified Block, but this might make the Player lose
     if (command.size() == 1) {
+        getBoard()->removeBlock(true);
         getBoard()->setNewCurrentBlock(createBlock(command[0]));
         
         // try to place the new selected Block
@@ -364,6 +384,8 @@ bool Game::updateBoard(std::string command, bool& currPlayerLose) {
             if (!applyHeavy()) return true;
         }
     }
+    // reach here if the command is the empty string, indicating an invalid
+    // command that does nothing to the Board
 
     // the given command did not end the player's turn
     return false;
@@ -423,6 +445,7 @@ bool Game::isBoardBlind(int board) {
     else return board1->isBlind();
 }
 
+/*
 bool Game::checkForGameReset() {
     // prompt text and graphical (if applicable) observers to display a Game Won
     // message, the only acceptable inputs are Y and N
@@ -439,6 +462,7 @@ bool Game::checkForGameReset() {
     // EOF without obtaining a valid input (if any), by default we quit the Game
     return false;
 }
+*/
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector

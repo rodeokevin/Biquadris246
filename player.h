@@ -17,10 +17,8 @@ class Player {
     // spent in Level 4 in total.
     int lvl4LastClearRow;
     std::string seq;
-    std::unique_ptr<Level> l;
     std::unique_ptr<ProbsOfLevels> pol;
-    // PUT THIS INTO BOARD
-    std::vector<std::pair<bool, std::string>> activeSpecAct;
+    std::unique_ptr<Level> l;
 
     // scoring based on row clearing
     void scoreRow(int rowsCleared);
@@ -38,9 +36,6 @@ class Player {
         // 'random' command used
         void setRand();
         char getBlock() const;
-        // CHANGE THIS SUCH THAT BOARD ITSELF STORES THE SPECIAL ACTION
-        void addSpecAct(bool lastWholeTurn, std::string specAct);
-        void clearSpecAct();
         // when the 'restart' command is used
         void restart();
         // end of the player's turn

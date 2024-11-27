@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     int startLevel = 0;
 
     // iterating through the command line arguments, if any
-    int i = 0;
+    int i = 1;
 
     // very basic command checking, assuming that any command that comes in pairs
     // have their appropriate command name + argument
