@@ -6,10 +6,10 @@ TextObserver::TextObserver(Game *game):game{game}{}
 
 void TextObserver::notify() {
     // Header
-    out << "Level:    " << game->getLevel(1) << "     "
-        << "Level:    " << game->getLevel(2) << endl;
-    out << "Score:    " << game->getScore(1) << "     "
-        << "Score:    " << game->getScore(2) << endl;
+    out << "Level:    " << game->getLevel(P0_IDX) << "     "
+        << "Level:    " << game->getLevel(P1_IDX) << endl;
+    out << "Score:    " << game->getScore(P0_IDX) << "     "
+        << "Score:    " << game->getScore(P1_IDX) << endl;
     out << "-----------     -----------" << endl;
     
     print();
@@ -23,8 +23,8 @@ void TextObserver::notify() {
             bool found = false;
             // If the following does not find, print " "
             for (int k = 0; k < 4; ++k) {
-                if (((game->getNextBlock(1))->getCoords())[k].first == j && ((game->getNextBlock(1))->getCoords())[k].second == i) {
-                    out << (game->getNextBlock(1))->getBlockSymbol();
+                if (((game->getNextBlock(P0_IDX))->getCoords())[k].first == j && ((game->getNextBlock(P0_IDX))->getCoords())[k].second == i) {
+                    out << (game->getNextBlock(P0_IDX))->getBlockSymbol();
                     found = true;
                 }
             }
@@ -35,8 +35,8 @@ void TextObserver::notify() {
             bool found = false;
             // If the following does not find, print " "
             for (int k = 0; k < 4; ++k) {
-                if (((game->getNextBlock(2))->getCoords())[k].first == j && ((game->getNextBlock(2))->getCoords())[k].second == i) {
-                    out << (game->getNextBlock(2))->getBlockSymbol();
+                if (((game->getNextBlock(P1_IDX))->getCoords())[k].first == j && ((game->getNextBlock(P1_IDX))->getCoords())[k].second == i) {
+                    out << (game->getNextBlock(P1_IDX))->getBlockSymbol();
                     found = true;
                 }
             }

@@ -74,16 +74,17 @@ class Game : public Subject {
     // this method is called to update the opponent/next Player's Block, and
     // checks whether it fits onto their Board
     bool updateBlock();
+    bool updateBoard(std::string command, int multiplier, bool& currPlayerLose);
     // Given a command, we check whether we must apply any of the Heavy properties
     // (applies them if needed). Returns True if the current Player's turn has ended,
     // and false otherwise. Also directly mutates the given boolean to indicate
     // whether the current player has lost (a turn ends when a player has lost).
     // Commands that do not update the Board directly, such as norandom, sequence,
     // etc. make this method return false.
-    bool updateBoard(std::string command, bool& currPlayerLose);
+    bool executeMove(std::string command, int multiplier);
     // updating the current Player's level depending on the given multiplier
-    void levelUp(int multiplier);
-    void levelDown(int multiplier);
+    void levelUp(int idx, int multiplier);
+    void levelDown(int idx, int multiplier);
     // determining whether a command is a moving command, excluding 'drop',
     // meant to be used to check whether we must apply the 'heavy' property of
     // Levels 3 and higher
