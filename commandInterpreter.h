@@ -10,17 +10,18 @@
 using namespace std;
 
 class CommandInterpreter {
-    Game* game;
-    unordered_map<string, function<void()>> commands;
+    // Game* game;
+    unordered_map<string, string> commands;
 
-    void renameCommand(const string& commandName, const string& newName);
+    void renameCommand(string& commandName, string& newName);
 
    public:
-    CommandInterpreter(Game* game);
+    // CommandInterpreter(Game* game);
+    CommandInterpreter();
     ~CommandInterpreter() = default;
 
-    string parseCommand(int& multiplier) const;
-    bool parseSpecialAction(vector<string>& actions) const;
+    string parseCommand(int& multiplier, string& filename);
+    bool parseSpecAct(vector<string>& actions) const;
 };
 
 #endif
