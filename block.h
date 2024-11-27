@@ -20,7 +20,7 @@ class Block : public std::enable_shared_from_this<Block>{
     std::pair<int, int> topLeft;
     std::pair<int, int> topRight;
   public:
-    friend class board;
+    friend class Board;
     std::vector<std::pair<int, int>> getCoords() const;
     virtual ~Block() = 0; // To make class abstract
     virtual Tile getBlockTile() = 0; // THIS SHOULD ONLY BE CALLED WHEN PLACING A TILE ON THE BOARD

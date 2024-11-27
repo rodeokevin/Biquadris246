@@ -43,6 +43,7 @@ class Game : public Subject {
     // taking the NOT of a bit
     int currPlayerIdx;
     std::unique_ptr<Player> p0, p1;
+    int consec_drop0, consec_drop1;
     // raw pointer pointing to the current player, makes it easier to access the
     // actual Player object instead, and relies on 'currPlayerIdx' integer to
     // switch between the two players easily
@@ -56,6 +57,11 @@ class Game : public Subject {
     // Player has lost upon trying to place their next Block onto the Board (true
     // if they lose, false if the initial Block placement is successful)
     bool switchPlayerTurn();
+    // this method handles the edge case of having a non-zero or non-one multipler
+    // on the 'drop' command, which would make them 'drop' the current Block
+    // immediately when it is their turn
+    bool handleConsecDrops();
+    void setConsecDrops(int multiplier);
     // Returns TRUE when the turn ended successfully, meaning it is now the next
     // player's turn, and FALSE when EOF is reached. Directly mutates the argument
     // to indicate how many rows the player has cleared on their turn. Also

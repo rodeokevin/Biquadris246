@@ -5,7 +5,7 @@
 #include "board.h"
 
 Game::Game(int seed, string seq0, string seq1, int startLevel)
-    : heavySpecAct{false}, hiScore{0}, currPlayerIdx{0} {
+    : heavySpecAct{false}, hiScore{0}, currPlayerIdx{0}, consec_drop0{0}, consec_drop1{0} {
     // setting up the players
     p0 = std::make_unique<Player>(seq0, startLevel);
     p1 = std::make_unique<Player>(seq1, startLevel);
@@ -110,6 +110,8 @@ void Game::restart() {
     board0 = std::make_unique<Board>(this);
     board1 = std::make_unique<Board>(this);
     clearSpecActs();
+    consec_drop0 = 0;
+    consec_drop1 = 0;
 }
 
 // Tries to drop a 1-by-1 block in the middle column of the current player's board.
@@ -256,7 +258,21 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // prompt observers to display the Boards
     notifyObservers();
 
-    std::string command = ci->parseCommand();
+    // in the case the player decided to drop consecutive blocks by using a
+    // multiplier for the 'drop' command, no input is read/needed and their
+    // current Block is immediately dropped. The method returns true if there
+    // was a call to make consecutive drops, and false if there is no need to
+    // directly execute the 'drop' command.
+    if (handleConsecDrops()) {
+        rowsCleared = getBoard()->clearFullRows();
+        notifyObservers();
+
+        return true;
+    }
+
+    int multiplier;
+
+    std::string command = ci->parseCommand(multiplier);
 
     // playing through the turn until we either get EOF or the 'drop' command
     while (command != "drop") {
@@ -268,20 +284,50 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             return true;
         }
         
-        // applies the appropriate Heavy effects if necessary, and displays the
-        // changes made to the Board
-        if (updateBoard(command, currPlayerLose)) return true;
+        // Applies the appropriate Heavy effects if necessary, and displays the
+        // changes made to the Board. Upon reading a command, if the multiplier
+        // is 0, it means that the Command Interpreter has already executed the
+        // command for us, but we must still check whether the command executed
+        // may end the turn of the current player without calling the 'drop'
+        // command. If the multiplier is -1, it means that the player has added
+        // a zero multiplier to their command, so we would do nothing regardless
+        // of their command
+        if (multiplier >= 0 && updateBoard(command, currPlayerLose)) return true;
 
         notifyObservers();
 
         // getting the command for the next move
-        command = ci->parseCommand();
+        command = ci->parseCommand(multiplier);
     }
+
+    // edge case of having a multiplier bigger than 1 applied to the 'drop' command,
+    // where we set up this Player's future turn to immediately drop their Block
+    if (command == "drop" && multiplier > 0) setConsecDrops(multiplier);
 
     rowsCleared = getBoard()->clearFullRows();
     notifyObservers();
 
     return true;
+}
+
+bool Game::handleConsecDrops() {
+    // return true in case where the current Player does automatically drop their
+    // current Block, and their turn ends
+    if (currPlayerIdx == P0_IDX && consec_drop0 != 0) {
+        getBoard()->dropBlock();
+        --consec_drop0;
+        return true;
+    } else if (currPlayerIdx == P1_IDX && consec_drop1 != 0) {
+        getBoard()->dropBlock();
+        --consec_drop1;
+        return true;
+    }
+
+    return false;
+}
+
+void Game::setConsecDrops(int multiplier) {
+    currPlayerIdx == P0_IDX ? consec_drop0 = multiplier : consec_drop1 = multiplier;
 }
 
 bool Game::updateBoard(std::string command, bool& currPlayerLose) {
