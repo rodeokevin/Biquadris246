@@ -17,7 +17,7 @@ class CommandInterpreter {
 
    public:
     CommandInterpreter(Game* game);
-    ~CommandInterpreter();
+    ~CommandInterpreter() = default;
 
     string parseCommand() const;
 };
