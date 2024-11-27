@@ -12,7 +12,7 @@ void TextObserver::notify() {
         << "Score:    " << game->getScore(2) << endl;
     out << "-----------     -----------" << endl;
     
-    printNormal();
+    print();
 
     // Footer
     out << "-----------     -----------" << endl;
@@ -46,36 +46,23 @@ void TextObserver::notify() {
     }
 }
 
-void TextObserver::printNormal() {
+void TextObserver::print() {
     for (int i = 0; i < ROWS; ++i) {
         for (int j = 0; j < COLS; ++j) {
-            out << game->getState(1, i, j); // State of p1
-        }
-        cout << "     ";
-        for (int j = 0; j < COLS; ++j) {
-            out << game->getState(2, i, j); // State of p2
-        }
-        out << endl;
-    }
-}
-
-void TextObserver::printBlind() {
-    for (int i = 0; i < ROWS; ++i) {
-        for (int j = 0; j < COLS; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB) {
+            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P0_IDX)) {
                 out << '?';
             }
             else {
-                out << game->getState(1, i, j); // State of p1
+                out << game->getState(P0_IDX, i, j); // State of p1
             }
         }
         cout << "     ";
         for (int j = 0; j < COLS; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB) {
+            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P1_IDX)) {
                 out << '?';
             }
             else {
-                out << game->getState(2, i, j); // State of p2
+                out << game->getState(P1_IDX, i, j); // State of p2
             }
         }
         out << endl;

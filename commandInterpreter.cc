@@ -34,13 +34,11 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
 
     commands["levelup"] = [this]() {
         Player* p = this->game->getCurrentPlayer();
-        int newLevel = p->getLevel() < 4 ? p->getLevel() + 1 : p->getLevel();
-        p->setLevel(newLevel);
+        p->setLevel(p->getLevel() + 1);
     };
     commands["leveldown"] = [this]() {
         Player* p = this->game->getCurrentPlayer();
-        int newLevel = p->getLevel() > 0 ? p->getLevel() - 1 : p->getLevel();
-        p->setLevel(newLevel);
+        p->setLevel(p->getLevel() - 1);
     };
     commands["norandom"] = [this]() {
         string fileName;
@@ -50,13 +48,13 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
         this->game->getCurrentPlayer()->setNoRand(fileName);
     };
 
-    commands["I"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<IBlock>()); };
-    commands["J"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<JBlock>()); };
-    commands["L"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<LBlock>()); };
-    commands["O"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<OBlock>()); };
-    commands["S"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<SBlock>()); };
-    commands["Z"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<ZBlock>()); };
-    commands["T"] = [this]() { this->game->getBoard()->setNewCurrentBlock(make_shared<TBlock>()); };
+    commands["I"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["J"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["L"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["O"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["S"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["Z"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["T"] = [this]() { this->game->getBoard()->removeBlock(true); };
 
     commands["restart"] = [this]() { this->game->restart(); };
     commands["quit"] = []() {
@@ -86,7 +84,7 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
     };
 }
 
-string CommandInterpreter::parseCommand() const {
+string CommandInterpreter::parseCommand(int& multiplier) const {
     string input;
     cout << "Enter command: ";
     if (!(cin >> input)) {
@@ -97,7 +95,7 @@ string CommandInterpreter::parseCommand() const {
     regex commandRegex(R"((\d*)([a-zA-Z]+))");
     smatch matches;
     if (regex_match(input, matches, commandRegex)) {
-        int multiplier = 1;
+        multiplier = 1;
         string commandName;
 
         // check if a multiplier is provided
@@ -121,9 +119,28 @@ string CommandInterpreter::parseCommand() const {
 
         // execute the matched command
         if (!match.empty() && commands.find(match) != commands.end()) {
+            // if the given multiplier is 0, but the matched command is one of
+            // 'restart', 'norandom' or 'random', we must still execute said
+            // command, though it matters not that the multiplier is -1 upon
+            // exiting the function, as Game handles this case appropriately
+            if (multiplier == 0 && (match == "restart" || match == "norandom" || match == "random")) {
+                commands.at(match)();
+            // otherwise, if the given multiplier is 0, we simply return an
+            // empty string to ensure that Game would not do anything with the
+            // given command, seeing that a zero multiplier is applied
+            } else if (multiplier == 0) return "";
+
+            // otherwise, we apply the command as many times as specified, while
+            // also mutated the multiplier to tell Game that we performed a
+            // command at least once, though the multiplier is used more
+            // specifically by Game to handle when a multiplier is applied on the
+            // 'drop' command
             for (int i = 0; i < multiplier; ++i) {
                 commands.at(match)();
             }
+
+            --multiplier;
+
             return match;
         } else {
             cout << "Invalid command: \"" << input << "\". Type 'help' for a list of commands." << endl;

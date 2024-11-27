@@ -34,50 +34,18 @@ GraphicObserver::GraphicObserver(Game *game):game{game} {
 
 // Notify
 void GraphicObserver::notify() {
-    printNormal();
-}
-
-// Print normally
-void GraphicObserver::printNormal() {
-    for (int i = 0; i < ROWS; ++i) {
-        // Grid1
-        for (int j = 0; j < COLS; ++j) {
-            char c = game->getState(1,i,j);
-            // If it was the same symbol as before, skip
-            if (c == charGrid1[i][j]) {
-                continue;
-            }
-            else {
-                int colour = getColourForBlock(c);
-                window->fillRectangle(j * 10, i * 10, 10, 10, colour);
-                charGrid1[i][j] = c; // Update the new char
-            }
-        }
-        // Grid2
-        for (int j = 0; j < COLS; ++j) {
-            char c = game->getState(2,i,j);
-            // If it was the same symbol as before, skip
-            if (c == charGrid2[i][j]) {
-                continue;
-            }
-            else {
-                int colour = getColourForBlock(c);
-                window->fillRectangle((j + GRID2LEFT) * 10, i * 10, 10, 10, colour);
-                charGrid2[i][j] = c; // Update the new char
-            }
-        }
-    }
+    print();
 }
 
 // Print with blinded effect
-void GraphicObserver::printBlind() {
+void GraphicObserver::print() {
     for (int i = 0; i < ROWS; ++i) {
         // Grid1
         for (int j = 0; j < COLS; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB) {
+            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P0_IDX)) {
                 window->fillRectangle(j * 10, i * 10, 10, 10, Xwindow::Black);
             }
-            char c = game->getState(1,i,j);
+            char c = game->getState(P0_IDX,i,j);
             // If it was the same symbol as before, skip
             if (c == charGrid1[i][j]) {
                 continue;
@@ -90,10 +58,10 @@ void GraphicObserver::printBlind() {
         }
         // Grid2
         for (int j = 0; j < 11; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB) {
+            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P1_IDX)) {
                 window->fillRectangle((j + GRID2LEFT) * 10, i * 10, 10, 10, Xwindow::Black);
             }
-            char c = game->getState(2,i,j);
+            char c = game->getState(P1_IDX,i,j);
             // If it was the same symbol as before, skip
             if (c == charGrid2[i][j]) {
                 continue;

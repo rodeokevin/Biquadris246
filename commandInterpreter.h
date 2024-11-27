@@ -19,7 +19,7 @@ class CommandInterpreter {
     CommandInterpreter(Game* game);
     ~CommandInterpreter() = default;
 
-    string parseCommand() const;
+    string parseCommand(int& multilpier) const;
 };
 
 #endif

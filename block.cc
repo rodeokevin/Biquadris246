@@ -1,8 +1,9 @@
 #include "block.h"
 #include <memory>
+#include <iostream>
 
 // Abstract Block class
-Block::~Block(){} // Destructor does nothing
+Block::~Block(){} // Destructor implemented in derived classes
 std::vector<std::pair<int, int>> Block::getCoords() const { return coords; }
 char Block::getBlockSymbol() { return tileSymbol; }
 
@@ -118,12 +119,18 @@ void Block::move(string dir) {
     }
 }
 
+int Block::getOrigLvl() { return origLvl; }
+
+Player* Block::getPlayer() { return player; }
+
 
 // Derived classes
 
 // OBlock class
 
-OBlock::OBlock() {
+OBlock::OBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'O';
     coords = {{0, 2}, {1, 2}, {0, 3}, {1, 3}}; // Default position on the board when dropped
     bottomLeft = {0,3};
@@ -139,10 +146,22 @@ std::vector<std::pair<int, int>> OBlock::computeRotatedCoords(string dir) const 
 Tile OBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+OBlock::~OBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+OBlock::~OBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // IBlock class
 
-IBlock::IBlock() {
+IBlock::IBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'I';
     coords = {{0, 3}, {1, 3}, {2, 3}, {3, 3}};
     bottomLeft = {0,3};
@@ -154,11 +173,17 @@ IBlock::IBlock() {
 Tile IBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+IBlock::~IBlock() {
+    player->scoreBlock(origLvl);
+}
+
 
 // SBlock class
 
 // Constructor
-SBlock::SBlock() {
+SBlock::SBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'S';
     coords = {{0, 3}, {1, 3}, {1, 2}, {2, 2}};
     bottomLeft = {0,3};
@@ -170,11 +195,23 @@ SBlock::SBlock() {
 Tile SBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+SBlock::~SBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+SBlock::~SBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // ZBlock class
 
 // Constructor
-ZBlock::ZBlock() {
+ZBlock::ZBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'Z';
     coords = {{0, 2}, {1, 2}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
@@ -186,11 +223,23 @@ ZBlock::ZBlock() {
 Tile ZBlock::getBlockTile() {
     return Tile(tileSymbol, true, shared_from_this());
 }
+ZBlock::~ZBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+ZBlock::~ZBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // JBlock class
 
 // Constructor
-JBlock::JBlock() {
+JBlock::JBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'J';
     coords = {{0, 2}, {0, 3}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
@@ -202,11 +251,23 @@ JBlock::JBlock() {
 Tile JBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+JBlock::~JBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+JBlock::~JBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // LBlock class
 
 // Constructor
-LBlock::LBlock() {
+LBlock::LBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'L';
     coords = {{2, 2}, {0, 3}, {1, 3}, {2, 3}};
     bottomLeft = {0,3};
@@ -218,11 +279,23 @@ LBlock::LBlock() {
 Tile LBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+LBlock::~LBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+LBlock::~LBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // TBlock class
 
 // Constructor
-TBlock::TBlock() {
+TBlock::TBlock(int lvl, Player *player) {
+    origLvl = lvl;
+    this->player = player;
     tileSymbol = 'T';
     coords = {{0, 2}, {1, 2}, {2, 2}, {1, 3}};
     bottomLeft = {0,3};
@@ -234,9 +307,21 @@ TBlock::TBlock() {
 Tile TBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+TBlock::~TBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
+TBlock::~TBlock() {
+    player->scoreBlock(origLvl);
+}
+
+
 
 // Constructor
-StarBlock::StarBlock() {
+StarBlock::StarBlock(Player *player) {
+    origLvl = 4;
+    this->player = player;
     tileSymbol = '*';
     coords = {{5,0}};
     bottomLeft = {5,0};
@@ -248,3 +333,7 @@ StarBlock::StarBlock() {
 Tile StarBlock::getBlockTile() { 
     return Tile(tileSymbol, true, shared_from_this());
 }
+StarBlock::~StarBlock() {
+    player->scoreBlock(origLvl);
+}
+

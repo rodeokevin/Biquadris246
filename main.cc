@@ -7,6 +7,7 @@
 #include "game.h"
 #include "observer.h"
 #include "textObserver.h"
+#include "graphicObserver.h"
 #include "tile.h"
 
 int main(int argc, char* argv[]) {
@@ -62,8 +63,13 @@ int main(int argc, char* argv[]) {
         ++i;
     }
 
-    // REMEMBER TO UPDATE 'GAME' AND ITS CTOR
-    std::unique_ptr<Game> game(new Game{textOnly, seed, seq1, seq2, startLevel});
+    std::unique_ptr<Game> game(new Game{seed, seq1, seq2, startLevel});
+    std::unique_ptr<Observer> textObs(new TextObserver{game.get()});
+    std::unique_ptr<Observer> graphObs(new GraphicObserver{game.get()});
+
+    game->attach(textObs.get());
+
+    if (!textOnly) game->attach(graphObs.get());
 
     // playing the game, until end of input/file
     game->play();
