@@ -73,10 +73,6 @@ class Game : public Subject {
     // this method is called to update the opponent/next Player's Block, and
     // checks whether it fits onto their Board
     bool updateBlock();
-    // this method immediately updates the current Block of the Board to become
-    // the specified block, used for testing purposes and the 'force' special
-    // action
-    void setCurrBlock(const char block);
     // Given a command, we check whether we must apply any of the Heavy properties
     // (applies them if needed). Returns True if the current Player's turn has ended,
     // and false otherwise. Also directly mutates the given boolean to indicate

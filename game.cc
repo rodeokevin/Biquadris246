@@ -334,8 +334,6 @@ bool Game::updateBoard(std::string command, bool& currPlayerLose) {
     // the only command that has a length of 1 is when we wish to set the currently
     // undropped Block to the specified Block, but this might make the Player lose
     if (command.size() == 1) {
-        // removing the 'old' undropped Block
-        getBoard()->removeBlock();
         getBoard()->setNewCurrentBlock(createBlock(command[0]));
         
         // try to place the new selected Block
