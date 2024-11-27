@@ -164,7 +164,6 @@ Tile IBlock::getBlockTile() {
     return Tile(tileSymbol, true, shared_from_this());
 }
 IBlock::~IBlock() {
-    std::cout << "destructor called" << std::endl;
     player->scoreBlock(origLvl);
 }
 
