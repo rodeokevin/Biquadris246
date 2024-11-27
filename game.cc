@@ -280,6 +280,10 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // playing through the turn until we either get EOF or the 'drop' command
     while (!(command == "drop" && multiplier > 0)) {
         if (command == sEOF) return false;
+        if (command == "") { // If we didn't do anything, don't reprint the board
+            command = ci->parseCommand(multiplier, filename);
+            continue;
+        }
 
         // in the case where we have the 'restart' command executed, we must
         // break out of the loop, as the Player's turn technically ends before

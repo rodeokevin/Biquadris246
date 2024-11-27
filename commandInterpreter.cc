@@ -208,23 +208,27 @@ string CommandInterpreter::parseCommand(int& multiplier, string& filename) {
             if (key.find(commandName) == 0) {  // check if first is a prefix of a command
                 if (!match.empty()) {
                     // more than one command matches
-                    cout << "Ambiguous command : \"" << commandName << "\". Type 'help' for a list of commands." << endl;
+                    cout << "Ambiguous command: \"" << commandName << "\". Type 'help' for a list of commands." << endl;
                     return "";
                 }
-                // check for commands with multiple arguments
-                if (value == "sequence" || value == "norandom") {
-                    filename = second;
-                } else if (value == "rename") {
-                    try {
-                        renameCommand(second, third);
-                        std::cout << "Command renamed from \"" << second << "\" to \"" << third << "\"\n";
-                    } catch (const std::exception& e) {
-                        std::cout << e.what() << std::endl;
-                    }
-                }
-                return value;
+                match = value; // Set the match to the value
             }
         }
+        // If we didn't find a command, reprompt
+        if (match.empty()) { std::cout << "No command found: " << commandName << std::endl; }
+        // check for commands with multiple arguments
+        if (match == "sequence" || match == "norandom") {
+                filename = second;
+        } 
+        else if (match == "rename") {
+            try {
+                renameCommand(second, third);
+                std::cout << "Command renamed from \"" << second << "\" to \"" << third << "\"\n";
+            } catch (const std::exception& e) {
+                std::cout << e.what() << std::endl;
+            }
+        }
+        return match;
     } else {
         std::cout << "Invalid input format: \"" << first << "\". Type 'help' for a list of commands." << std::endl;
         return "";
