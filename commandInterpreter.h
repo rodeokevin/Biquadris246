@@ -19,7 +19,8 @@ class CommandInterpreter {
     CommandInterpreter(Game* game);
     ~CommandInterpreter() = default;
 
-    string parseCommand(int& multilpier) const;
+    string parseCommand(int& multiplier) const;
+    bool parseSpecialAction(vector<string>& actions) const;
 };
 
 #endif
