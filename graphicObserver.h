@@ -15,6 +15,7 @@ class GraphicObserver: public Observer {
     const int WINDOW_WIDTH = 50;
     const int WINDOW_HEIGHT = 25;
     const int GRID2LEFT = 16; // How many tiles Grid2 is shifted
+    const int P0_IDX = 0, P1_IDX = 1;
     // Window for this Observer
     std::unique_ptr<Xwindow> window = nullptr;
     // Pointer to the Game subject
@@ -24,13 +25,12 @@ class GraphicObserver: public Observer {
     std::vector<std::vector<char>> charGrid2;
 
     int getColourForBlock(char c);
+    void print();
 
     public:
         GraphicObserver(Game *game); // Ctor
         void notify() override;
         ~GraphicObserver() = default;
-        void printNormal();
-        void printBlind();
 };
 
 #endif

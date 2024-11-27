@@ -19,24 +19,21 @@ Game::Game(int seed, string seq0, string seq1, int startLevel)
 }
 
 // Get the state of one of the Boards
-char Game::getState(int currPlayerIdx, int row, int col) const {
-    if (currPlayerIdx == 0) {
-        return board0->charAt(row, col);
-    } else {
-        return board1->charAt(row, col);
-    }
+char Game::getState(int playerIdx, int row, int col) const {
+    if (playerIdx == P0_IDX) return board0->charAt(row, col);
+     else return board1->charAt(row, col);
 }
 
 Block* Game::getNextBlock(int player) {
-    return (player == 0) ? board0->nextBlock.get() : board1->nextBlock.get();
+    return (player == P0_IDX) ? board0->nextBlock.get() : board1->nextBlock.get();
 }
 
 int Game::getLevel(int player) const {
-    return (player == 0) ? p0->getLevel() : p1->getLevel();
+    return (player == P0_IDX) ? p0->getLevel() : p1->getLevel();
 }
 
 int Game::getScore(int player) const {
-    return (player == 0) ? p0->getScore() : p1->getScore();
+    return (player == P0_IDX) ? p0->getScore() : p1->getScore();
 }
 
 void Game::updateHiScore() { hiScore = max(hiScore, max(p0->getScore(), p1->getScore())); }
@@ -64,7 +61,7 @@ bool Game::switchPlayerTurn() {
     bool playerLost = updateBlock();
 
     // updating the Player pointer
-    if (currPlayerIdx == 0) currPlayerPointer = p1.get();
+    if (currPlayerIdx == P0_IDX) currPlayerPointer = p1.get();
     else currPlayerPointer = p0.get();
 
     // updating the player 'index'
@@ -102,11 +99,11 @@ std::shared_ptr<Block> Game::createBlock(char block) {
 }
 
 Board* Game::getBoard() const {
-    return currPlayerIdx == 0 ? board0.get() : board1.get();
+    return currPlayerIdx == P0_IDX ? board0.get() : board1.get();
 }
 
 void Game::restart() {
-    currPlayerIdx = 0;
+    currPlayerIdx = P0_IDX;
     p0->restart();
     p1->restart();
     currPlayerPointer = p0.get();
@@ -119,7 +116,7 @@ void Game::restart() {
 // Returns True if successful, and False otherwise (the player loses, since the
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
-    if (currPlayerIdx == 0) return board0->dropStarBlock(currPlayerPointer);
+    if (currPlayerIdx == P0_IDX) return board0->dropStarBlock(currPlayerPointer);
     else return board1->dropStarBlock(currPlayerPointer);
 }
 
@@ -376,6 +373,11 @@ bool Game::applyHeavy() {
         getBoard()->moveBlock("d");
         return true;
     }
+}
+
+bool Game::isBoardBlind(int board) {
+    if (board == P0_IDX) return board0->isBlind();
+    else return board1->isBlind();
 }
 
 bool Game::checkForGameReset() {

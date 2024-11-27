@@ -7,6 +7,7 @@
 #include "block.h"
 
 class Board {
+    friend class Game;
     const int ROWS = 18, COLS = 11;
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
     std::shared_ptr<Block> currentBlock;
@@ -17,7 +18,6 @@ class Board {
     bool tryRotateBlock(string dir); // Check if a Block can rotate (dir is either "CW" or "CCW")
     void shiftDown(int i); //Shifts all blocks in rows above and including i downards by 1
     public:
-        friend class Game;
         Board(); // Constructor
         char charAt(int row, int col) const; // Get the char at a specific index
         Block *getNextBlock();

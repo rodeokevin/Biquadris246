@@ -34,6 +34,7 @@ class Game : public Subject {
     // one which Heavy applies
     const int HEAVY_LVL_DOWN = 1;
     const int HEAVY_SPEC_ACT_DOWN = 2;
+    const int P0_IDX = 0, P1_IDX = 1;
     // 'heavySpecAct' is true when the current board has the Heavy special action
     // applied to it
     bool heavySpecAct;
@@ -127,6 +128,10 @@ class Game : public Subject {
     Block *getNextBlock(int p);  // For textObserver to fetch the next Block
     void play();
     void restart();
+
+    // for the observers to determine whether a specific board is blind, 0 means
+    // board0, 1 means board1
+    bool isBoardBlind(int board);
 };
 
 #endif
