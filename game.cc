@@ -12,8 +12,8 @@ Game::Game(int seed, string seq0, string seq1, int startLevel)
     currPlayerPointer = p1.get();
     // setting up the board for each player, though they do not actually have
     // access to their associated player
-    board0 = std::make_unique<Board>(this);
-    board1 = std::make_unique<Board>(this);
+    board0 = std::make_unique<Board>();
+    board1 = std::make_unique<Board>();
     // initializing the command interpreter
     ci = std::make_unique<CommandInterpreter>();
 }
@@ -56,7 +56,7 @@ Player* Game::getCurrentPlayer() const {
 
 bool Game::switchPlayerTurn() {
     // clearing any special actions active on our current player
-    clearSpecAct();
+    clearSpecActs();
     // updating the hi score when the turn ends
     updateHiScore();
     // updating Player's Blocks for the next turn, displaying the changes to the
@@ -112,15 +112,15 @@ void Game::restart() {
     currPlayerPointer = p0.get();
     board0 = std::make_unique<Board>(this);
     board1 = std::make_unique<Board>(this);
-    clearSpecAct();
+    clearSpecActs();
 }
 
 // Tries to drop a 1-by-1 block in the middle column of the current player's board.
 // Returns True if successful, and False otherwise (the player loses, since the
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
-    if (currPlayerIdx == 0) return board0->dropStarBlock();
-    else return board1->dropStarBlock();
+    if (currPlayerIdx == 0) return board0->dropStarBlock(currPlayerPointer);
+    else return board1->dropStarBlock(currPlayerPointer);
 }
 
 // prompts the current player if they cleared more than 1 row this turn to pick
@@ -287,6 +287,8 @@ bool Game::updateBoard(std::string command, bool& currPlayerLose) {
     // the only command that has a length of 1 is when we wish to set the currently
     // undropped Block to the specified Block, but this might make the Player lose
     if (command.size() == 1) {
+        // removing the 'old' undropped Block
+        getBoard()->removeBlock();
         getBoard()->setNewCurrentBlock(createBlock(command[0]));
         
         // try to place the new selected Block
@@ -332,11 +334,26 @@ bool Game::addSpecActs(std::vector<std::string> specActs) {
         else {
             // remove the currently undropped Block
             getBoard()->removeBlock();
+            // setting the current Block to the specified one
+            getBoard()->setNewCurrentBlock(createBlock(specAct[0]));
 
-            // try to place new specified Block
-
+            // try to place new specified Block, if we are unsuccessful, it means
+            // the Player has lost
+            if (!getBoard()->tryPlaceBlock()) return false;
+            
+            // otherwise, we place the Block in its starting position
+            getBoard()->placeBlock();
         }
     }
+
+    // return true to signal that adding the special actions did not cause the
+    // Player to lose
+    return true;
+}
+
+void Game::clearSpecActs() {
+    getBoard()->setBlind(false);
+    heavySpecAct = false;
 }
 
 bool Game::isMovingCom(const std::string command) const {

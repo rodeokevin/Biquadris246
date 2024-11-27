@@ -100,7 +100,7 @@ class Game : public Subject {
     // special actions does not cause the affected Player to lose ('force' may
     // cause the Player to lose)
     bool addSpecActs(std::vector<std::string> specActs);
-    void clearSpecAct();
+    void clearSpecActs();
     // method to add the penalty 1-by-1 block for the current player if they
     // were unable to clear a block within 5 turns when in Level 4
     bool addPenalty();
