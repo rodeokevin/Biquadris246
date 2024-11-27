@@ -235,8 +235,10 @@ void Game::play() {
 void Game::gameInit() {
     board0->setNewCurrentBlock(createBlock(p0->getBlock()));
     board0->placeBlock();
+    board0->setNewNextBlock(createBlock(p0->getBlock()));
     board1->setNewCurrentBlock(createBlock(p1->getBlock()));
     board1->placeBlock();
+    board1->setNewNextBlock(createBlock(p1->getBlock()));
     notifyObservers();
 }
 
