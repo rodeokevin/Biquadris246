@@ -51,7 +51,7 @@ class OBlock : public Block {
     // Override because rotation on OBlock does nothing
     std::vector<std::pair<int, int>> computeRotatedCoords(string dir) const override;
     Tile getBlockTile() override;
-    //~OBlock() override;
+    ~OBlock() override;
 };
 
 // IBlock
@@ -67,7 +67,7 @@ class SBlock : public Block {
   public:
     SBlock(int origLvl, Player *player);
     Tile getBlockTile() override;
-    //~SBlock() override;
+    ~SBlock() override;
 };
 
 // ZBlock
@@ -75,7 +75,7 @@ class ZBlock : public Block {
   public:
     ZBlock(int origLvl, Player *player);
     Tile getBlockTile() override;
-    //~ZBlock() override;
+    ~ZBlock() override;
 };
 
 // JBlock
@@ -83,7 +83,7 @@ class JBlock : public Block {
   public:
     JBlock(int origLvl, Player *player);
     Tile getBlockTile() override;
-    //~JBlock() override;
+    ~JBlock() override;
 };
 
 // LBlock
@@ -91,7 +91,7 @@ class LBlock : public Block {
   public:
     LBlock(int origLvl, Player *player);
     Tile getBlockTile() override;
-    //~LBlock() override;
+    ~LBlock() override;
 };
 
 // TBlock
@@ -99,7 +99,7 @@ class TBlock : public Block {
   public:
     TBlock(int origLvl, Player *player);
     Tile getBlockTile() override;
-    //~TBlock() override;
+    ~TBlock() override;
 };
 
 // StarBlock
@@ -107,7 +107,7 @@ class StarBlock : public Block {
   public:
     StarBlock(Player *player);
     Tile getBlockTile() override;
-    //~StarBlock() override;
+    ~StarBlock() override;
 };
 
 #endif

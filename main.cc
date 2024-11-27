@@ -63,7 +63,6 @@ int main(int argc, char* argv[]) {
         ++i;
     }
 
-    // REMEMBER TO UPDATE 'GAME' AND ITS CTOR
     std::unique_ptr<Game> game(new Game{seed, seq1, seq2, startLevel});
     std::unique_ptr<Observer> textObs(new TextObserver{game.get()});
     std::unique_ptr<Observer> graphObs(new GraphicObserver{game.get()});
