@@ -47,6 +47,7 @@ class Player {
         bool turnEnd(int rowsCleared);
         // scoring based on block clearing
         void scoreBlock(int origLvl);
+        void offsetScoreBlock(int origLvl);
 };
 
 #endif

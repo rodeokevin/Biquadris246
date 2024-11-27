@@ -201,7 +201,6 @@ void Game::play() {
         // 1. The player had 'force' imposed on them, causing them to lose.
         // 2. During Level 4, the 1 by 1 block cannot be dropped upon the player
         //    incurring the Level 4 penalty ('turnEnd()' returns True when the
-        //    current player incurs the Level 4 penalty and 'getBoard()->dropStarBlock()' returns 
         //    current player incurs the Level 4 penalty and 'addPenalty()' returns
         //    False when the 1 by 1 block was not dropped successfully, meaning
         //    that column was full prior to the block's addition, and adding
@@ -209,7 +208,7 @@ void Game::play() {
         // 3. Upon exiting their turn and setting up for when they can play
         //    again, their next dropped Block cannot be placed.
         if (currPlayLose ||
-            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !getBoard()->dropStarBlock()) ||
+            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) ||
             switchPlayerTurn()) {
             bool gameRestart = checkForGameReset();
 
@@ -378,7 +377,7 @@ bool Game::addSpecActs(std::vector<std::string> specActs) {
         // Player, so we may return before applying all the special actions
         else {
             // remove the currently undropped Block
-            getBoard()->removeBlock();
+            getBoard()->removeBlock(true);
             // setting the current Block to the specified one
             getBoard()->setNewCurrentBlock(createBlock(specAct[0]));
 

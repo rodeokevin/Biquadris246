@@ -44,6 +44,10 @@ void Player::scoreBlock(int origLvl) {
     score += (origLvl + 1) * (origLvl + 1);
 }
 
+void Player::offsetScoreBlock(int origLvl) {
+    score -= (origLvl + 1) * (origLvl + 1);
+}
+
 bool Player::turnEnd(int rowsCleared) {
     // increasing the score based on row clearing
     scoreRow(rowsCleared);

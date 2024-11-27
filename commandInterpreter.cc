@@ -48,13 +48,13 @@ CommandInterpreter::CommandInterpreter(Game* game) : game(game) {
         this->game->getCurrentPlayer()->setNoRand(fileName);
     };
 
-    commands["I"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["J"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["L"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["O"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["S"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["Z"] = [this]() { this->game->getBoard()->removeBlock(); };
-    commands["T"] = [this]() { this->game->getBoard()->removeBlock(); };
+    commands["I"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["J"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["L"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["O"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["S"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["Z"] = [this]() { this->game->getBoard()->removeBlock(true); };
+    commands["T"] = [this]() { this->game->getBoard()->removeBlock(true); };
 
     commands["restart"] = [this]() { this->game->restart(); };
     commands["quit"] = []() {

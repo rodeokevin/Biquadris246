@@ -63,7 +63,10 @@ void Board::placeBlock() {
 }
 
 // Remove the Bloack on the Board (does not modify the Block's coordinates)
-void Board::removeBlock() {
+void Board::removeBlock(bool pointOffset) {
+    // offset the points if needed
+    if (pointOffset) currentBlock->getPlayer()->offsetScoreBlock(currentBlock->getOrigLvl());
+
     for (const auto& tile : currentBlock->getCoords()) {
         grid[tile.second][tile.first] = Tile(' '); // Replace with Blank Tile
     }
@@ -96,7 +99,7 @@ bool Board::tryRotateBlock(string dir) {
 // Rotate the Block
 void Board::rotateBlock(string dir) {
     if (tryRotateBlock(dir)) {
-        removeBlock();
+        removeBlock(false);
         currentBlock->rotate(dir);
         placeBlock();
     }
@@ -129,7 +132,7 @@ bool Board::tryMoveBlock(string dir) {
 // Move the Block (if tryMoveBlock returns true)
 void Board::moveBlock(string dir) {
     if (tryMoveBlock(dir)) {
-        removeBlock();
+        removeBlock(false);
         currentBlock->move(dir);
         placeBlock();
     }
@@ -191,8 +194,8 @@ void Board::clearBoard() {
     }
 }
 
-bool Board::dropStarBlock() {
-    std::shared_ptr<Block> star = std::make_shared<StarBlock>();
+bool Board::dropStarBlock(Player* player) {
+    std::shared_ptr<Block> star = std::make_shared<StarBlock>(player);
     std::shared_ptr<Block> temp = currentBlock; // temporarily hold the currentBlock to not lose it
     currentBlock = star;
     if (!tryPlaceBlock()) {
