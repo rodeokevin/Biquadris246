@@ -150,13 +150,6 @@ OBlock::~OBlock() {
     player->scoreBlock(origLvl);
 }
 
-
-OBlock::~OBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
-
 // IBlock class
 
 IBlock::IBlock(int lvl, Player *player) {
@@ -199,13 +192,6 @@ SBlock::~SBlock() {
     player->scoreBlock(origLvl);
 }
 
-
-SBlock::~SBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
-
 // ZBlock class
 
 // Constructor
@@ -226,13 +212,6 @@ Tile ZBlock::getBlockTile() {
 ZBlock::~ZBlock() {
     player->scoreBlock(origLvl);
 }
-
-
-ZBlock::~ZBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
 
 // JBlock class
 
@@ -255,13 +234,6 @@ JBlock::~JBlock() {
     player->scoreBlock(origLvl);
 }
 
-
-JBlock::~JBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
-
 // LBlock class
 
 // Constructor
@@ -283,13 +255,6 @@ LBlock::~LBlock() {
     player->scoreBlock(origLvl);
 }
 
-
-LBlock::~LBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
-
 // TBlock class
 
 // Constructor
@@ -310,13 +275,6 @@ Tile TBlock::getBlockTile() {
 TBlock::~TBlock() {
     player->scoreBlock(origLvl);
 }
-
-
-TBlock::~TBlock() {
-    player->scoreBlock(origLvl);
-}
-
-
 
 // Constructor
 StarBlock::StarBlock(Player *player) {
