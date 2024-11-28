@@ -83,7 +83,7 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
     regex commandRegex(R"((\d*)([a-zA-Z]+))");
     smatch matches;
     if (regex_match(first, matches, commandRegex)) {
-        int multiplier;
+        int multiplier = 1;
         string commandName;
 
         // check if a multiplier is provided

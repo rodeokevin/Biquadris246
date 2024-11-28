@@ -230,13 +230,6 @@ void Game::play() {
         if (currPlayLose ||
             (playerEndTurn && addingPenaltyCauseLoss) ||
             switchPlayerCauseLoss) {
-            /*
-            std::cout << "Current player has lost flag: " << (currPlayLose ? "True\n" : "False\n");
-            std::cout << "Must add penalty flag: " << (playerEndTurn ? "True\n" : "False\n");
-            std::cout << "Adding penalty causes loss flag: " << (addingPenaltyCauseLoss ? "True\n" : "False\n");
-            std::cout << "Player " << getPlayerTurn() + 1 << " has won!" << endl;
-            */
-
             bool gameRestart = checkForGameReset();
 
             // If the player(s) do wish to restart the game, then we do so, and
@@ -273,11 +266,11 @@ void Game::gameInit() {
     board1->setNewNextBlock(createBlock(p1->getBlock()));
 }
 
-std::string Game::getCommand(int& multiplier, std::string& filename) {
-    if (readFromSeq.is_open()) return ci->parseCommand(readFromSeq, multiplier, filename);
+std::string Game::getCommand(std::string& filename) {
+    if (readFromSeq.is_open()) return ci->parseCommand(readFromSeq, filename);
     else {
         std::cout << "Enter command: ";
-        return ci->parseCommand(std::cin, multiplier, filename);
+        return ci->parseCommand(std::cin, filename);
     }
 }
 
@@ -534,15 +527,14 @@ bool Game::checkForGameReset() {
     // message, the only acceptable inputs are Y and N
 
     std::string s, f;
-    int m = 1;
 
     if (readFromSeq.is_open()) {
-        s = getCommand(m, f);
+        s = getCommand(f);
 
         while (s != sEOF) {
             if (s == "restart") return true;
 
-            s = getCommand(m, f);
+            s = getCommand(f);
         }
 
         std::cout << "Sequence file completed." << std::endl;
@@ -550,12 +542,12 @@ bool Game::checkForGameReset() {
 
     readFromSeq.close();
 
-    s = getCommand(m, f);
+    s = getCommand(f);
 
     while (s != sEOF) {
         if (s == "restart") return true;
 
-        s = getCommand(m, f);
+        s = getCommand(f);
     }
 
     // EOF without obtaining a valid input (if any), by default we quit the Game

@@ -81,7 +81,7 @@ class Game : public Subject {
     // this method is called to update the opponent/next Player's Block, and
     // checks whether it fits onto their Board
     bool updateBlock();
-    std::string getCommand(int& multiplier, std::string& filename);
+    std::string getCommand(std::string& filename);
     bool updateBoard(std::string command, int multiplier, bool& currPlayerLose);
     // Given a command, we check whether we must apply any of the Heavy properties
     // (applies them if needed). Returns True if the current Player's turn has ended,
