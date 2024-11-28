@@ -32,8 +32,10 @@ bool CommandInterpreter::createMacro() {
         return false;
     }
     cout << "Macro will be named \"" << name
-         << "\". Enter commands, using their full names. Commands multipliers are accepted (e.g. 3left 2clockwise): ";
-    if (!(cin >> macroCommands)) {
+         << "\". Enter commands, using their full names. Commands multipliers are accepted (e.g. 3left 2clockwise): "
+         << endl;
+    std::cin.ignore(1, '\n');
+    if (!(getline(cin, macroCommands))) {
         return false;
     }
     commands[name] = macroCommands;
@@ -41,31 +43,41 @@ bool CommandInterpreter::createMacro() {
     return true;
 }
 
+bool CommandInterpreter::isBuiltinCommand(string& command) const {
+    for (string s : builtinCommands) {
+        if (command == s) {
+            return true;
+        }
+    }
+    return false;
+}
+
 CommandInterpreter::CommandInterpreter() {
-    commands["left"] = "left";
-    commands["right"] = "right";
-    commands["down"] = "down";
-    commands["clockwise"] = "clockwise";
-    commands["counterclockwise"] = "counterclockwise";
-    commands["drop"] = "drop";
+    builtinCommands = {
+        "left",
+        "right",
+        "down",
+        "clockwise",
+        "counterclockwise",
+        "drop",
+        "levelup",
+        "leveldown",
+        "sequence",
+        "I",
+        "J",
+        "L",
+        "O",
+        "S",
+        "Z",
+        "T",
+        "restart",
+        "help",
+        "rename",
+        "macro"};
 
-    commands["levelup"] = "levelup";
-    commands["leveldown"] = "leveldown";
-    commands["norandom"] = "norandom";
-    commands["sequence"] = "sequence";
-
-    commands["I"] = "I";
-    commands["J"] = "J";
-    commands["L"] = "L";
-    commands["O"] = "O";
-    commands["S"] = "S";
-    commands["Z"] = "Z";
-    commands["T"] = "T";
-
-    commands["restart"] = "restart";
-    commands["help"] = "help";
-    commands["rename"] = "rename";
-    commands["macro"] = "macro";
+    for (string s : builtinCommands) {
+        commands[s] = s;
+    }
 }
 
 string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
@@ -122,6 +134,7 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
             if (!createMacro()) {
                 return "EOF";
             }
+            return "";
         } else if (match == "help") {
             cout << "Available commands:\n";
             for (const auto& [key, _] : commands) {
@@ -129,7 +142,11 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
             }
             cout << "You can also prefix commands with a number (e.g., '3left' to move left three times).\n";
         }
-        return to_string(multiplier) + match;
+        if (isBuiltinCommand(match)) {
+            return to_string(multiplier) + match;
+        } else {
+            return match;
+        }
     } else {
         std::cout << "Invalid input format: \"" << first << "\". Type 'help' for a list of commands." << std::endl;
         return "";
