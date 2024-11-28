@@ -103,7 +103,7 @@ void GraphicObserver::print() {
         p0PrevLevel = game->getLevel(P0_IDX); 
     }
     if (game->getScore(P0_IDX) != p0PrevScore) {
-        window->fillRectangle(45, 45, 15, 11, Xwindow::White);
+        window->fillRectangle(45, 45, 80, 11, Xwindow::White);
         window->drawString(50, 55, std::to_string(game->getScore(P0_IDX)));
         p0PrevScore = game->getScore(P0_IDX);
     }
@@ -113,7 +113,7 @@ void GraphicObserver::print() {
         p1PrevLevel = game->getLevel(P1_IDX); 
     }
     if (game->getScore(P1_IDX) != p1PrevScore) {
-        window->fillRectangle(200, 45, 15, 11, Xwindow::White);
+        window->fillRectangle(195, 45, 80, 11, Xwindow::White);
         window->drawString(200, 55, std::to_string(game->getScore(P1_IDX)));
         p1PrevScore = game->getScore(P1_IDX);
     }
