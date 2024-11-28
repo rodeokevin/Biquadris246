@@ -121,7 +121,7 @@ class Game : public Subject {
     // when a player loses, all commands are locked, and we will prompt the
     // player(s) for whether they wish to restart the game
     bool checkForGameReset();
-    // creating Block objects depending on which Block we want, and returning it
+    // Creating Block objects depending on which Block we want, and returning it.
     std::shared_ptr<Block> createBlock(const char block);
 
    public:

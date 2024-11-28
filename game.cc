@@ -92,21 +92,23 @@ bool Game::updateBlock() {
     return !success;
 }
 
-std::shared_ptr<Block> Game::createBlock(char block) {
+std::shared_ptr<Block> Game::createBlock(const char block) {
+    Player* p = currPlayerPointer;
+
     if (block == 'I')
-        return make_shared<IBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<IBlock>(p->getLevel(), p);
     else if (block == 'J')
-        return make_shared<JBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<JBlock>(p->getLevel(), p);
     else if (block == 'L')
-        return make_shared<LBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<LBlock>(p->getLevel(), p);
     else if (block == 'O')
-        return make_shared<OBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<OBlock>(p->getLevel(), p);
     else if (block == 'S')
-        return make_shared<SBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<SBlock>(p->getLevel(), p);
     else if (block == 'Z')
-        return make_shared<ZBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<ZBlock>(p->getLevel(), p);
     else
-        return make_shared<TBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+        return make_shared<TBlock>(p->getLevel(), p);
 }
 
 Board* Game::getBoard() const {
