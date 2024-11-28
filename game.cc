@@ -20,8 +20,10 @@ Game::Game(int seed, string seq0, string seq1, int startLevel)
 
 // Get the state of one of the Boards
 char Game::getState(int playerIdx, int row, int col) const {
-    if (playerIdx == P0_IDX) return board0->charAt(row, col);
-     else return board1->charAt(row, col);
+    if (playerIdx == P0_IDX)
+        return board0->charAt(row, col);
+    else
+        return board1->charAt(row, col);
 }
 
 Block* Game::getNextBlock(int player) {
@@ -63,8 +65,10 @@ bool Game::switchPlayerTurn() {
     bool playerLost = updateBlock();
 
     // updating the Player pointer
-    if (currPlayerIdx == P0_IDX) currPlayerPointer = p1.get();
-    else currPlayerPointer = p0.get();
+    if (currPlayerIdx == P0_IDX)
+        currPlayerPointer = p1.get();
+    else
+        currPlayerPointer = p0.get();
 
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
@@ -89,13 +93,20 @@ bool Game::updateBlock() {
 }
 
 std::shared_ptr<Block> Game::createBlock(char block) {
-    if (block == 'I') return make_shared<IBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else if (block == 'J') return make_shared<JBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else if (block == 'L') return make_shared<LBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else if (block == 'O') return make_shared<OBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else if (block == 'S') return make_shared<SBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else if (block == 'Z') return make_shared<ZBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
-    else return make_shared<TBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    if (block == 'I')
+        return make_shared<IBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'J')
+        return make_shared<JBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'L')
+        return make_shared<LBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'O')
+        return make_shared<OBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'S')
+        return make_shared<SBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else if (block == 'Z')
+        return make_shared<ZBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
+    else
+        return make_shared<TBlock>(currPlayerPointer->getLevel(), currPlayerPointer);
 }
 
 Board* Game::getBoard() const {
@@ -119,8 +130,10 @@ void Game::restart() {
 // Returns True if successful, and False otherwise (the player loses, since the
 // middle column is full and cannot take an extra block)
 bool Game::addPenalty() {
-    if (currPlayerIdx == P0_IDX) return board0->dropStarBlock(currPlayerPointer);
-    else return board1->dropStarBlock(currPlayerPointer);
+    if (currPlayerIdx == P0_IDX)
+        return board0->dropStarBlock(currPlayerPointer);
+    else
+        return board1->dropStarBlock(currPlayerPointer);
 }
 
 // prompts the current player if they cleared more than 1 row this turn to pick
@@ -267,7 +280,8 @@ void Game::gameInit() {
 }
 
 std::string Game::getCommand(std::string& filename) {
-    if (readFromSeq.is_open()) return ci->parseCommand(readFromSeq, filename);
+    if (readFromSeq.is_open())
+        return ci->parseCommand(readFromSeq, filename);
     else {
         std::cout << "Enter command: ";
         return ci->parseCommand(std::cin, filename);
@@ -314,7 +328,8 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             std::cout << "Sequence file completed." << std::endl;
             commandSeq = getCommand(filename);
             continue;
-        } else if (commandSeq == sEOF) break;
+        } else if (commandSeq == sEOF)
+            break;
         else if (commandSeq == "") {
             commandSeq = getCommand(filename);
             continue;
@@ -348,11 +363,16 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
                 restart();
                 gameReset = true;
                 return true;
-            } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
-            else if (command == "random") currPlayerPointer->setRand();
-            else if (command == "sequence") readFromSeq.open(filename);
-            else if (command == "levelup") levelUp(currPlayerIdx, multiplier);
-            else if (command == "leveldown") levelDown(currPlayerIdx, multiplier);
+            } else if (command == "norandom")
+                currPlayerPointer->setNoRand(filename);
+            else if (command == "random")
+                currPlayerPointer->setRand();
+            else if (command == "sequence")
+                readFromSeq.open(filename);
+            else if (command == "levelup")
+                levelUp(currPlayerIdx, multiplier);
+            else if (command == "leveldown")
+                levelDown(currPlayerIdx, multiplier);
             // Applies the appropriate Heavy effects if necessary, and displays the
             // changes made to the Board. Upon reading a command, if the multiplier
             // is 0, it means that the Command Interpreter has already executed the
@@ -361,7 +381,8 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             // command. If the multiplier is -1, it means that the player has added
             // a zero multiplier to their command, so we would do nothing regardless
             // of their command
-            else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose)) return true;
+            else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose))
+                return true;
 
             notifyObservers();
         }
@@ -422,7 +443,7 @@ bool Game::updateBoard(std::string command, int multiplier, bool& currPlayerLose
     if (command.size() == 1) {
         getBoard()->removeBlock(true);
         getBoard()->setNewCurrentBlock(createBlock(command[0]));
-        
+
         // try to place the new selected Block
         if (!getBoard()->tryPlaceBlock()) {
             // before returning, we output the updated Board, which is essentially
@@ -435,7 +456,8 @@ bool Game::updateBoard(std::string command, int multiplier, bool& currPlayerLose
         }
 
         getBoard()->placeBlock();
-    } else if (isMovingCom(command)) return executeMove(command, multiplier);
+    } else if (isMovingCom(command))
+        return executeMove(command, multiplier);
 
     // if we get here, either we got an invalid command, represented by an empty
     // string (which would not trigger any of the above statements) or command
@@ -454,9 +476,12 @@ bool Game::executeMove(std::string command, int multiplier) {
         for (int i = 0; i < multiplier; ++i) getBoard()->moveBlock("r");
 
         if (heavySpecAct) heavyMoves += HEAVY_SPEC_ACT_DOWN;
-    } else if (command == "down") for (int i = 0; i < multiplier; ++i) getBoard()->moveBlock("d");
-    else if (command == "clockwise") for (int i = 0; i < multiplier; ++i) getBoard()->rotateBlock("CW");
-    else for (int i = 0; i < multiplier; ++i) getBoard()->rotateBlock("CCW");
+    } else if (command == "down")
+        for (int i = 0; i < multiplier; ++i) getBoard()->moveBlock("d");
+    else if (command == "clockwise")
+        for (int i = 0; i < multiplier; ++i) getBoard()->rotateBlock("CW");
+    else
+        for (int i = 0; i < multiplier; ++i) getBoard()->rotateBlock("CCW");
 
     // apply the Heavy property, if needed
     for (int i = 0; i < heavyMoves; ++i) {
@@ -472,8 +497,10 @@ bool Game::executeMove(std::string command, int multiplier) {
 
 bool Game::addSpecActs(std::vector<std::string> specActs) {
     for (auto specAct : specActs) {
-        if (specAct == "blind") getBoard()->setBlind(true);
-        else if (specAct == "heavy") heavySpecAct = true;
+        if (specAct == "blind")
+            getBoard()->setBlind(true);
+        else if (specAct == "heavy")
+            heavySpecAct = true;
         // case where the special action is force, which may cause a loss for the
         // Player, so we may return before applying all the special actions
         else {
@@ -485,7 +512,7 @@ bool Game::addSpecActs(std::vector<std::string> specActs) {
             // try to place new specified Block, if we are unsuccessful, it means
             // the Player has lost
             if (!getBoard()->tryPlaceBlock()) return false;
-            
+
             // otherwise, we place the Block in its starting position
             getBoard()->placeBlock();
         }
@@ -520,10 +547,11 @@ bool Game::applyHeavy() {
 }
 
 bool Game::isBoardBlind(int board) {
-    if (board == P0_IDX) return board0->isBlind();
-    else return board1->isBlind();
+    if (board == P0_IDX)
+        return board0->isBlind();
+    else
+        return board1->isBlind();
 }
-
 
 bool Game::checkForGameReset() {
     // prompt text and graphical (if applicable) observers to display a Game Won
@@ -556,7 +584,6 @@ bool Game::checkForGameReset() {
     // EOF without obtaining a valid input (if any), by default we quit the Game
     return false;
 }
-
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector

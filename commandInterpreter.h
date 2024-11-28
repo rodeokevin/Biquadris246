@@ -10,9 +10,11 @@ using namespace std;
 class CommandInterpreter {
     // Game* game;
     unordered_map<string, string> commands;
+    vector<string> builtinCommands;
 
     void renameCommand(string& commandName, string& newName);
     bool createMacro();
+    bool isBuiltinCommand(string& command) const;
 
    public:
     // CommandInterpreter(Game* game);
