@@ -42,9 +42,6 @@ void Player::offsetScoreBlock(int origLvl) {
 }
 
 bool Player::turnEnd(int rowsCleared) {
-    // increasing the score based on row clearing
-    scoreRow(rowsCleared);
-
     // if we are on Level 4 and we've cleared at least one row, we can reset the
     // penalty counter
     if (l->getLevel() >= 4 && rowsCleared) lvl4LastClearRow = 0;

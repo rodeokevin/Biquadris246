@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 #include "board.h"
 #include "commandInterpreter.h"
@@ -73,14 +74,14 @@ class Game : public Subject {
     // player's turn, and FALSE when EOF is reached. Directly mutates the argument
     // to indicate how many rows the player has cleared on their turn. Also
     // indicates whether the player has lost upon having special actions applied.
-    bool playTurn(int &currTurnRowsCleared, bool &currPlayerLose, std::vector<std::string> specActs);
+    bool playTurn(int &currTurnRowsCleared, bool &currPlayerLose, std::vector<std::string> specActs, bool& gameReset);
     // this method is executed at the very beginning of the game to set up the
     // Boards' initial Blocks properly
     void gameInit();
     // this method is called to update the opponent/next Player's Block, and
     // checks whether it fits onto their Board
     bool updateBlock();
-    std::string getCommand(int& multiplier, std::string& filename);
+    std::string getCommand(std::string& filename);
     bool updateBoard(std::string command, int multiplier, bool& currPlayerLose);
     // Given a command, we check whether we must apply any of the Heavy properties
     // (applies them if needed). Returns True if the current Player's turn has ended,
@@ -128,6 +129,7 @@ class Game : public Subject {
     // Accessors (and settors?)
     int getLevel(int player) const;
     int getScore(int player) const;
+    int getHiScore() const;
     void updateScoreDestroyedBlock(int increase);
 
     int getPlayerTurn() const;
