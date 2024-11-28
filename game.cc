@@ -311,73 +311,69 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
         return true;
     }
 
-    int multiplier = 1;
     std::string filename;
 
-    std::string command = getCommand(multiplier, filename);
-    std::istringstream iss{command}
-    std::string currCommand;
-    while (iss >> currCommand) {
-        "left right rotat"
-    }
+    std::string commandSeq = getCommand(filename);
 
-    // playing through the turn until we either get EOF or the 'drop' command
-    while (!(command == "drop" && multiplier > 0)) {
-        // if we have finished reading through a given sequence file, we can close
-        // it to indicate that we are returning to reading from standard input,
-        // and continue taking input from the standard input stream (for the current
-        // turn, we would pretend as if the entered command does not do anything)
-        if (command == sEOF && readFromSeq.is_open()) {
+    while (true) {
+        if (commandSeq == sEOF && readFromSeq.is_open()) {
             readFromSeq.close();
             std::cout << "Sequence file completed." << std::endl;
-            command = "";
-        // if we do get the EOF string as the returned command, then we can
-        // return false to indicate that we did reach EOF
-        } else if (command == sEOF) return false;
-        // If we didn't do anything, don't reprint the board
-        else if (command == "") {
-            multiplier = 1;
-            command = getCommand(multiplier, filename);
+            commandSeq = getCommand(filename);
             continue;
-        // in the case where we have the 'restart' command executed, we must
-        // break out of the loop, as the Player's turn technically ends before
-        // the 'drop' command is made
-        } else if (command == "restart") {
-            restart();
-            gameReset = true;
-            return true;
-        } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
-        else if (command == "random") currPlayerPointer->setRand();
-        else if (command == "sequence") readFromSeq.open(filename);
-        else if (command == "levelup") levelUp(currPlayerIdx, multiplier);
-        else if (command == "leveldown") levelDown(currPlayerIdx, multiplier);
-        
-        // Applies the appropriate Heavy effects if necessary, and displays the
-        // changes made to the Board. Upon reading a command, if the multiplier
-        // is 0, it means that the Command Interpreter has already executed the
-        // command for us, but we must still check whether the command executed
-        // may end the turn of the current player without calling the 'drop'
-        // command. If the multiplier is -1, it means that the player has added
-        // a zero multiplier to their command, so we would do nothing regardless
-        // of their command
-        else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose)) return true;
+        } else if (commandSeq == sEOF) break;
+        else if (commandSeq == "") {
+            commandSeq = getCommand(filename);
+            continue;
+        }
 
-        notifyObservers();
+        std::istringstream iss{commandSeq};
+        std::string curr;
 
-        // resetting the multiplier
-        multiplier = 1;
-        // getting the next command
-        command = getCommand(multiplier, filename);
+        while (iss >> curr) {
+            size_t multIdx = 0;
+
+            // getting all the digits of the multiplier
+            while (multIdx < curr.size() && std::isdigit(curr[multIdx])) ++multIdx;
+
+            int multiplier = std::stoi(curr.substr(0, multIdx));
+            std::string command = curr.substr(multIdx);
+
+            if (command == "drop" && multiplier > 0) {
+                // once we get here, it means that the drop command was initiated
+                setConsecDrops(multiplier - 1);
+                getBoard()->dropBlock();
+
+                rowsCleared = getBoard()->clearFullRows();
+                currPlayerPointer->scoreRow(rowsCleared);
+
+                return true;
+            } else if (command == "restart") {
+                restart();
+                gameReset = true;
+                return true;
+            } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
+            else if (command == "random") currPlayerPointer->setRand();
+            else if (command == "sequence") readFromSeq.open(filename);
+            else if (command == "levelup") levelUp(currPlayerIdx, multiplier);
+            else if (command == "leveldown") levelDown(currPlayerIdx, multiplier);
+            // Applies the appropriate Heavy effects if necessary, and displays the
+            // changes made to the Board. Upon reading a command, if the multiplier
+            // is 0, it means that the Command Interpreter has already executed the
+            // command for us, but we must still check whether the command executed
+            // may end the turn of the current player without calling the 'drop'
+            // command. If the multiplier is -1, it means that the player has added
+            // a zero multiplier to their command, so we would do nothing regardless
+            // of their command
+            else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose)) return true;
+
+            notifyObservers();
+        }
+
+        commandSeq = getCommand(filename);
     }
 
-    // once we get here, it means that the drop command was initiated
-    setConsecDrops(multiplier - 1);
-    getBoard()->dropBlock();
-
-    rowsCleared = getBoard()->clearFullRows();
-    currPlayerPointer->scoreRow(rowsCleared);
-
-    return true;
+    return false;
 }
 
 void Game::levelUp(int idx, int multiplier) {

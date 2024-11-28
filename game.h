@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 #include "board.h"
 #include "commandInterpreter.h"
