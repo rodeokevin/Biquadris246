@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(std::string s, int startLevel): score{0}, seq{s} {
+Player::Player(std::string s, int startLevel): score{0}, lvl4LastClearRow{0}, seq{s} {
     pol = std::make_unique<ProbsOfLevels>();
     setLevel(startLevel);
 }
