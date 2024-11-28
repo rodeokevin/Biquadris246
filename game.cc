@@ -58,8 +58,6 @@ Player* Game::getCurrentPlayer() const {
 bool Game::switchPlayerTurn() {
     // clearing any special actions active on our current player
     clearSpecActs();
-    // updating the hi score when the turn ends
-    updateHiScore();
     // updating Player's Blocks for the next turn, displaying the changes to the
     // Board, and determining whether they have lost
     bool playerLost = updateBlock();
@@ -72,8 +70,6 @@ bool Game::switchPlayerTurn() {
 
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
-
-    // std::cout << "Player loss flag within switchPlayerTurn(): " << (playerLost ? "True\n" : "False\n");
 
     return playerLost;
 }
@@ -145,7 +141,7 @@ std::vector<std::string> Game::promptForSpecAct(int rowsCleared, bool& isEOF) {
     std::vector<std::string> validInputSpecAct;
 
     if (numOfSpecAct > 0) {
-        cout << "Multiple rows cleard!" << " You are allowed to pick " << numOfSpecAct;
+        cout << "Multiple rows cleared!" << " You are allowed to pick " << numOfSpecAct;
 
         // different output depending on the number of special actions the player
         // can pick
@@ -267,11 +263,16 @@ void Game::play() {
         // next turn
         activeSpecActs = promptForSpecAct(currTurnRowsCleared, isEOF);
 
-        if (isEOF) return;
+        if (isEOF) {
+            std::cout << "End of input detected. Exiting..." << std::endl;
+            return;
+        }
 
         // reset the number of rows cleared for the next player's turn
         currTurnRowsCleared = 0;
     }
+
+    std::cout << "End of input detected. Exiting..." << std::endl;
 }
 
 void Game::gameInit() {
@@ -319,6 +320,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     if (handleConsecDrops()) {
         rowsCleared = getBoard()->clearFullRows();
         currPlayerPointer->scoreRow(rowsCleared);
+        updateHiScore();
         notifyObservers();
 
         return true;
@@ -334,8 +336,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             std::cout << "Sequence file completed." << std::endl;
             commandSeq = getCommand(filename);
             continue;
-        } else if (commandSeq == sEOF)
-            break;
+        } else if (commandSeq == sEOF) break;
         else if (commandSeq == "") {
             commandSeq = getCommand(filename);
             continue;
@@ -358,9 +359,11 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             if (command == "drop" && multiplier > 0) {
                 setConsecDrops(multiplier - 1);
                 getBoard()->dropBlock();
+                getBoard()->setNewCurrentBlock(nullptr);
 
                 rowsCleared = getBoard()->clearFullRows();
                 currPlayerPointer->scoreRow(rowsCleared);
+                updateHiScore();
 
                 if (rowsCleared > 1) notifyObservers();
 
@@ -429,10 +432,12 @@ bool Game::handleConsecDrops() {
     // current Block, and their turn ends
     if (currPlayerIdx == P0_IDX && consec_drop0 != 0) {
         getBoard()->dropBlock();
+        getBoard()->setNewCurrentBlock(nullptr);
         --consec_drop0;
         return true;
     } else if (currPlayerIdx == P1_IDX && consec_drop1 != 0) {
         getBoard()->dropBlock();
+        getBoard()->setNewCurrentBlock(nullptr);
         --consec_drop1;
         return true;
     }

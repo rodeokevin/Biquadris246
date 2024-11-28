@@ -86,7 +86,6 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
     string input;
 
     if (!(getline(in, input))) {
-        std::cout << "End of input detected. Exiting..." << std::endl;
         return "EOF";
     }
 
@@ -160,7 +159,6 @@ std::string CommandInterpreter::parseSpecAct(std::istream& in) const {
     string input;
 
     if (!getline(in, input)) {
-        std::cout << "End of input detected. Exiting..." << std::endl;
         return "EOF";
     }
 
