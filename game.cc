@@ -276,9 +276,11 @@ void Game::gameInit() {
     board0->setNewCurrentBlock(createBlock(p0->getBlock()));
     board0->placeBlock();
     board0->setNewNextBlock(createBlock(p0->getBlock()));
+    currPlayerPointer = p1.get();
     board1->setNewCurrentBlock(createBlock(p1->getBlock()));
     board1->placeBlock();
     board1->setNewNextBlock(createBlock(p1->getBlock()));
+    currPlayerPointer = p0.get();
 }
 
 std::string Game::getCommand(std::string& filename) {
