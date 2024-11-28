@@ -361,7 +361,8 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
                 if (rowsCleared > 1) notifyObservers();
 
                 return true;
-            } else if (command == "restart") {
+            } else if (command == "help" || command == "rename") continue;
+            else if (command == "restart") {
                 restart();
                 gameReset = true;
                 return true;
