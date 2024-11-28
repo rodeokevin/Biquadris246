@@ -23,4 +23,3 @@ class TextObserver: public Observer {
         ~TextObserver() = default;
 };
 #endif
-

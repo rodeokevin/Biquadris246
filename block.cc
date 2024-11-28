@@ -294,4 +294,3 @@ Tile StarBlock::getBlockTile() {
 StarBlock::~StarBlock() {
     player->scoreBlock(origLvl);
 }
-

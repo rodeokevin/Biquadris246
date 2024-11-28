@@ -71,5 +71,3 @@ void TextObserver::print() {
         out << endl;
     }
 }
-
-
