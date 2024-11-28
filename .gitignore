@@ -2,3 +2,5 @@
 *.d
 biquadris
 *.pdf
+gcm.cache
+.vscode

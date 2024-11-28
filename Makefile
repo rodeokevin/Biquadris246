@@ -1,17 +1,10 @@
-# Universal makefile for single C++ program
-#
-# Use gcc flag -MMD (user) or -MD (user/system) to generate dependencies among source files.
-# Use make default rules for commonly used file-name suffixes and make variables names.
-#
-# % make [ a.out ]
-
 ########## Variables ##########
 
 CXX = g++-11					# compiler
-CXXFLAGS = -std=c++20 -g -Wall -Werror=vla -MMD			# compiler flags
+CXXFLAGS = -std=c++20 -g -Wall -Werror=vla -MMD -Iinclude			# compiler flags
 MAKEFILE_NAME = ${firstword ${MAKEFILE_LIST}}	# makefile name
 
-SOURCES = $(wildcard *.cc)			# source files (*.cc)
+SOURCES = $(wildcard src/*.cc) main.cc			# source files (*.cc)
 OBJECTS = ${SOURCES:.cc=.o}			# object files forming executable
 DEPENDS = ${OBJECTS:.o=.d}			# substitute ".o" with ".d"
 EXEC = biquadris					# executable name
