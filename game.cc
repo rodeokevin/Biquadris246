@@ -325,20 +325,23 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
 
         while (iss >> curr) {
             size_t multIdx = 0;
+            int multiplier = 1;
 
             // getting all the digits of the multiplier
             while (multIdx < curr.size() && std::isdigit(curr[multIdx])) ++multIdx;
 
-            int multiplier = std::stoi(curr.substr(0, multIdx));
+            if (multIdx > 0) multiplier = std::stoi(curr.substr(0, multIdx));
+
             std::string command = curr.substr(multIdx);
 
             if (command == "drop" && multiplier > 0) {
-                // once we get here, it means that the drop command was initiated
                 setConsecDrops(multiplier - 1);
                 getBoard()->dropBlock();
 
                 rowsCleared = getBoard()->clearFullRows();
                 currPlayerPointer->scoreRow(rowsCleared);
+
+                if (rowsCleared > 1) notifyObservers();
 
                 return true;
             } else if (command == "restart") {
