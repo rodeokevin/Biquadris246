@@ -1,5 +1,4 @@
 *.o
 *.d
-test.cc
-*.txt
 biquadris
+*.pdf
