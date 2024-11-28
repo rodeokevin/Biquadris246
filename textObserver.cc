@@ -6,18 +6,21 @@ TextObserver::TextObserver(Game *game):game{game}{}
 
 void TextObserver::notify() {
     // Header
-    out << "Level:    " << game->getLevel(P0_IDX) << "     "
-        << "Level:    " << game->getLevel(P1_IDX) << endl;
-    out << "Score:    " << game->getScore(P0_IDX) << "     "
-        << "Score:    " << game->getScore(P1_IDX) << endl;
+    out << "         BIQUADRIS" << endl;
+    out << "HISCORE: " << game->getHiScore() << "   TURN: PLAYER " << (game->getPlayerTurn())+1 << endl;
+    out << endl;
+    out << "LEVEL:    " << game->getLevel(P0_IDX) << "     "
+        << "LEVEL:    " << game->getLevel(P1_IDX) << endl;
+    out << "SCORE:    " << game->getScore(P0_IDX) << "     "
+        << "SCORE:    " << game->getScore(P1_IDX) << endl;
     out << "-----------     -----------" << endl;
     
     print();
 
     // Footer
     out << "-----------     -----------" << endl;
-    out << "Next:      " << "     "
-        << "Next:      " << endl;
+    out << "NEXT:      " << "     "
+        << "NEXT:      " << endl;
     for (int i = 2; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
             bool found = false;
