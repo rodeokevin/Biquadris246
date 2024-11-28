@@ -19,6 +19,7 @@ class TextObserver: public Observer {
     public:
         TextObserver(Game *game);
         void notify() override;
+        void notifyWin() override;
         ~TextObserver() = default;
 };
 #endif

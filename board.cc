@@ -26,6 +26,7 @@ Board::Board(): isBlindBoard{false} {
 }
 
 char Board::charAt(int row, int col) const {
+    if (row >= BLINDL && row <= BLINDR && col >= BLINDT && col <= BLINDB && isBlindBoard) return '?';
     return grid[row][col].getSymbol();
 }
 

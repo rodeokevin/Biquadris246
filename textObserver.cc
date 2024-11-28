@@ -49,17 +49,17 @@ void TextObserver::notify() {
     }
 }
 
+void TextObserver::notifyWin() {
+    out << "Player " << game->getPlayerTurn() + 1 << " has won!\n";
+    out << "Enter 'restart' to restart the game.\n";
+}
+
 void TextObserver::print() {
     for (int i = 0; i < ROWS; ++i) {
         for (int j = 0; j < COLS; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P0_IDX)) {
-                out << '?';
-            }
-            else {
-                out << game->getState(P0_IDX, i, j); // State of p1
-            }
+            out << game->getState(P0_IDX, i, j); // State of p1
         }
-        cout << "     ";
+        out << "     ";
         for (int j = 0; j < COLS; ++j) {
             if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P1_IDX)) {
                 out << '?';

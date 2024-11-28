@@ -72,43 +72,61 @@ void GraphicObserver::notify() {
     print();
 }
 
+void GraphicObserver::notifyWin() {
+    /*
+    window->fillRectangle(190, 15, 10, 11, Xwindow::Green);
+    std::string winningMsg = "Player ";
+    winningMsg += std::to_string(game->getPlayerTurn() + 1);
+    winningMsg += " has won!";
+    window->drawString(190, 25, winningMsg);
+    */
+}
+
 // Print with blinded effect
 void GraphicObserver::print() {
     // Header
     if (game->getHiScore() != prevHighScore) {
         window->fillRectangle(50, 15, 135, 11, Xwindow::White);
         window->drawString(54, 25, std::to_string(game->getHiScore()));
+        prevHighScore = game->getHiScore();
     }
     if (game->getPlayerTurn() != prevPlayerIdx) {
         window->fillRectangle(270, 15, 10, 11, Xwindow::White);
-        window->drawString(270, 25, std::to_string(1 - prevPlayerIdx));
+        window->drawString(270, 25, std::to_string(2 - prevPlayerIdx));
+        prevPlayerIdx = 1 - prevPlayerIdx;
     }
 
     // Score + Level
     if (game->getLevel(P0_IDX) != p0PrevLevel) {
         window->fillRectangle(45, 33, 15, 11, Xwindow::White);
         window->drawString(50, 43, std::to_string(game->getLevel(P0_IDX)));
+        p0PrevLevel = game->getLevel(P0_IDX); 
     }
     if (game->getScore(P0_IDX) != p0PrevScore) {
         window->fillRectangle(45, 45, 15, 11, Xwindow::White);
         window->drawString(50, 55, std::to_string(game->getScore(P0_IDX)));
+        p0PrevScore = game->getScore(P0_IDX);
     }
     if (game->getLevel(P1_IDX) != p1PrevLevel) {
         window->fillRectangle(195, 33, 15, 11, Xwindow::White);
         window->drawString(200, 43, std::to_string(game->getLevel(P1_IDX)));
+        p1PrevLevel = game->getLevel(P1_IDX); 
     }
     if (game->getScore(P1_IDX) != p1PrevScore) {
         window->fillRectangle(200, 45, 15, 11, Xwindow::White);
         window->drawString(200, 55, std::to_string(game->getScore(P1_IDX)));
+        p1PrevScore = game->getScore(P1_IDX);
     }
     
 
     for (int i = 0; i < ROWS; ++i) {
         // Grid1
         for (int j = 0; j < COLS; ++j) {
+            /*
             if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P0_IDX)) {
                 window->fillRectangle((j + GRID1LEFT) * 10, (i + GRIDTOP) * 10, 10, 10, Xwindow::Black);
             }
+            */
             char c = game->getState(P0_IDX,i,j);
             // If it was the same symbol as before, skip
             if (c == charGrid1[i][j]) {
@@ -149,7 +167,7 @@ void GraphicObserver::print() {
         // Grid2
         for (int j = 0; j < 11; ++j) {
             if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P1_IDX)) {
-                window->fillRectangle((j + GRID2LEFT) * 10, (i * GRIDTOP) * 10, 10, 10, Xwindow::Black);
+                window->fillRectangle((j + GRID2LEFT) * 10, (i + GRIDTOP) * 10, 10, 10, Xwindow::Black);
             }
             char c = game->getState(P1_IDX,i,j);
             // If it was the same symbol as before, skip

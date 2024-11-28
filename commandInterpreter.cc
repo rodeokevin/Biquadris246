@@ -71,6 +71,8 @@ CommandInterpreter::CommandInterpreter() {
         "Z",
         "T",
         "restart",
+        "norandom",
+        "random",
         "help",
         "rename",
         "macro"};

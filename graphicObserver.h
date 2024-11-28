@@ -52,6 +52,7 @@ class GraphicObserver: public Observer {
     public:
         GraphicObserver(Game *game); // Ctor
         void notify() override;
+        void notifyWin() override;
         ~GraphicObserver() = default;
 };
 

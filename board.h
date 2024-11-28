@@ -9,6 +9,7 @@
 class Board {
     friend class Game;
     const int ROWS = 18, COLS = 11;
+    const int BLINDL = 2, BLINDR = 11, BLINDT = 2, BLINDB = 8;
     std::vector<std::vector<Tile>> grid; // 2D vector representing the Board
     std::shared_ptr<Block> currentBlock;
     std::shared_ptr<Block> nextBlock;

@@ -243,6 +243,8 @@ void Game::play() {
         if (currPlayLose ||
             (playerEndTurn && addingPenaltyCauseLoss) ||
             switchPlayerCauseLoss) {
+            notifyWin();
+            
             bool gameRestart = checkForGameReset();
 
             // If the player(s) do wish to restart the game, then we do so, and
@@ -563,7 +565,13 @@ bool Game::checkForGameReset() {
         s = getCommand(f);
 
         while (s != sEOF) {
-            if (s == "restart") return true;
+            size_t multIdx = 0;
+
+            while (multIdx < s.size() && std::isdigit(s[multIdx])) ++multIdx;
+
+            std::string command = s.substr(multIdx);
+
+            if (command == "restart") return true;
 
             s = getCommand(f);
         }
@@ -576,7 +584,13 @@ bool Game::checkForGameReset() {
     s = getCommand(f);
 
     while (s != sEOF) {
-        if (s == "restart") return true;
+        size_t multIdx = 0;
+
+        while (multIdx < s.size() && std::isdigit(s[multIdx])) ++multIdx;
+
+        std::string command = s.substr(multIdx);
+
+        if (command == "restart") return true;
 
         s = getCommand(f);
     }
@@ -604,5 +618,12 @@ void Subject::notifyObservers() {
     // Notify each observer in the vector
     for (auto it : observers) {
         it->notify();
+    }
+}
+
+void Subject::notifyWin() {
+    // Notify each observer in the vector
+    for (auto it : observers) {
+        it->notifyWin();
     }
 }

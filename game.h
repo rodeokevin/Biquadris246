@@ -22,6 +22,7 @@ class Subject {
     void attach(Observer *o);
     void detach(Observer *o);
     void notifyObservers();
+    void notifyWin();
     virtual char getState(int player, int row, int col) const = 0;
     virtual ~Subject() = default;
 };
