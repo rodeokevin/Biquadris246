@@ -179,9 +179,9 @@ CommandInterpreter::CommandInterpreter() {
 //     }
 // }
 
-string CommandInterpreter::parseCommand(std::istream& in, int& multiplier, string& filename) {
+string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
     string input;
-    cout << "Enter command: ";
+
     if (!(getline(in, input))) {
         std::cout << "End of input detected. Exiting..." << std::endl;
         return "EOF";
@@ -247,7 +247,7 @@ std::string CommandInterpreter::parseSpecAct(std::istream& in) const {
     // match the three special actions
     std::regex blindPattern("^b(l(i(n(d)?)?)?)?$", std::regex::icase);
     std::regex heavyPattern("^h(e(a(v(y)?)?)?)?$", std::regex::icase);
-    std::regex forcePattern("^f(o(r(c(e)?)?)?)?(\\s+(I|J|L|O|S|Z|T))?$", std::regex::icase);
+    std::regex forcePattern("^(f(o(r(c(e)?)?)?)?)\\s+(I|J|L|O|S|Z|T)$", std::regex::icase);
 
     if (regex_match(input, blindPattern)) {
         return "blind";
@@ -258,8 +258,8 @@ std::string CommandInterpreter::parseSpecAct(std::istream& in) const {
         std::smatch match;
         if (regex_search(input, match, forcePattern)) {
             //
-            if (match[7].matched) {
-                return match[7].str();
+            if (match[6].matched) {
+                return match[6];
             }
         }
         cout << "Invalid block type for 'force'.\n";

@@ -36,6 +36,8 @@ int Game::getScore(int player) const {
     return (player == P0_IDX) ? p0->getScore() : p1->getScore();
 }
 
+int Game::getHiScore() const { return hiScore; }
+
 void Game::updateHiScore() { hiScore = max(hiScore, max(p0->getScore(), p1->getScore())); }
 
 void Game::updateScoreDestroyedBlock(int origLvl) {
@@ -67,6 +69,8 @@ bool Game::switchPlayerTurn() {
     // updating the player 'index'
     currPlayerIdx = 1 - currPlayerIdx;
 
+    // std::cout << "Player loss flag within switchPlayerTurn(): " << (playerLost ? "True\n" : "False\n");
+
     return playerLost;
 }
 
@@ -77,7 +81,6 @@ bool Game::updateBlock() {
     bool success = getBoard()->tryPlaceBlock();
 
     // if it is possible to place the Block in its initial position, we place it
-    // and display the changes
     if (success) getBoard()->placeBlock();
 
     // since we wish to return whether the current player has lost, we return
@@ -144,6 +147,7 @@ std::vector<std::string> Game::promptForSpecAct(int rowsCleared, bool& isEOF) {
 
                 if (specActPicked == sEOF) {
                     readFromSeq.close();
+                    std::cout << "Sequence file completed." << std::endl;
                     continue;
                 }
             } else {
@@ -189,6 +193,7 @@ void Game::play() {
     int currTurnRowsCleared = 0;
     bool currPlayLose = false;
     bool isEOF = false;
+    bool gameReset = false;
 
     // setting up both Board for the first turn
     gameInit();
@@ -199,7 +204,19 @@ void Game::play() {
     // the 'while' loop condition plays the turn, while the loop content performs
     // most of the end of turn mechanics not done by 'playTurn()', such as
     // prompting for special actions
-    while (playTurn(currTurnRowsCleared, currPlayLose, activeSpecActs)) {
+    while (playTurn(currTurnRowsCleared, currPlayLose, activeSpecActs, gameReset)) {
+        if (gameReset) {
+            gameReset = false;
+            activeSpecActs.clear();
+            continue;
+        }
+
+        bool playerEndTurn = currPlayerPointer->turnEnd(currTurnRowsCleared);
+        bool addingPenaltyCauseLoss = false;
+
+        if (playerEndTurn) addingPenaltyCauseLoss = !addPenalty();
+
+        bool switchPlayerCauseLoss = switchPlayerTurn();
         // Two ways the current Player can lose:
         // 1. The player had 'force' imposed on them, causing them to lose.
         // 2. During Level 4, the 1 by 1 block cannot be dropped upon the player
@@ -211,11 +228,16 @@ void Game::play() {
         // 3. Upon exiting their turn and setting up for when they can play
         //    again, their next dropped Block cannot be placed.
         if (currPlayLose ||
-            (currPlayerPointer->turnEnd(currTurnRowsCleared) && !addPenalty()) ||
-            switchPlayerTurn()) {
-            // bool gameRestart = checkForGameReset();
+            (playerEndTurn && addingPenaltyCauseLoss) ||
+            switchPlayerCauseLoss) {
+            /*
+            std::cout << "Current player has lost flag: " << (currPlayLose ? "True\n" : "False\n");
+            std::cout << "Must add penalty flag: " << (playerEndTurn ? "True\n" : "False\n");
+            std::cout << "Adding penalty causes loss flag: " << (addingPenaltyCauseLoss ? "True\n" : "False\n");
+            std::cout << "Player " << getPlayerTurn() + 1 << " has won!" << endl;
+            */
 
-            bool gameRestart = true;
+            bool gameRestart = checkForGameReset();
 
             // If the player(s) do wish to restart the game, then we do so, and
             // continue this 'while' loop. Otherwise, we simply break out of it,
@@ -253,7 +275,10 @@ void Game::gameInit() {
 
 std::string Game::getCommand(int& multiplier, std::string& filename) {
     if (readFromSeq.is_open()) return ci->parseCommand(readFromSeq, multiplier, filename);
-    else return ci->parseCommand(std::cin, multiplier, filename);
+    else {
+        std::cout << "Enter command: ";
+        return ci->parseCommand(std::cin, multiplier, filename);
+    }
 }
 
 // Most of the mechanics for a player's turn. Some of the things done by this
@@ -262,7 +287,7 @@ std::string Game::getCommand(int& multiplier, std::string& filename) {
 // - Updating the number of rows cleared by the Player this turn.
 // This method runs essentially until EOF or the Player executes a 'drop' command,
 // or one of the 'heavy' properties force the player's block to be dropped.
-bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::string> specActs) {
+bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::string> specActs, bool& gameReset) {
     // applying the active special actions, and in the case that 'force' causes
     // the Player to lose, we immediately end the turn, but return true as the
     // player(s) can decide whether to restart
@@ -280,6 +305,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // directly execute the 'drop' command.
     if (handleConsecDrops()) {
         rowsCleared = getBoard()->clearFullRows();
+        currPlayerPointer->scoreRow(rowsCleared);
         notifyObservers();
 
         return true;
@@ -289,15 +315,22 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     std::string filename;
 
     std::string command = getCommand(multiplier, filename);
+    std::istringstream iss{command}
+    std::string currCommand;
+    while (iss >> currCommand) {
+        "left right rotat"
+    }
 
     // playing through the turn until we either get EOF or the 'drop' command
     while (!(command == "drop" && multiplier > 0)) {
         // if we have finished reading through a given sequence file, we can close
         // it to indicate that we are returning to reading from standard input,
-        // and continue taking input from the standard input stream
+        // and continue taking input from the standard input stream (for the current
+        // turn, we would pretend as if the entered command does not do anything)
         if (command == sEOF && readFromSeq.is_open()) {
             readFromSeq.close();
-            continue;
+            std::cout << "Sequence file completed." << std::endl;
+            command = "";
         // if we do get the EOF string as the returned command, then we can
         // return false to indicate that we did reach EOF
         } else if (command == sEOF) return false;
@@ -311,6 +344,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
         // the 'drop' command is made
         } else if (command == "restart") {
             restart();
+            gameReset = true;
             return true;
         } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
         else if (command == "random") currPlayerPointer->setRand();
@@ -341,8 +375,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     getBoard()->dropBlock();
 
     rowsCleared = getBoard()->clearFullRows();
-
-    if (rowsCleared > 0) notifyObservers();
+    currPlayerPointer->scoreRow(rowsCleared);
 
     return true;
 }
@@ -499,24 +532,40 @@ bool Game::isBoardBlind(int board) {
     else return board1->isBlind();
 }
 
-/*
+
 bool Game::checkForGameReset() {
     // prompt text and graphical (if applicable) observers to display a Game Won
     // message, the only acceptable inputs are Y and N
 
-    std::string s;
+    std::string s, f;
+    int m = 1;
 
-    while (ci->checkForGameReset(s)) {
-        if (s == "yes" || s == "restart")
-            return true;
-        else if (s == "no")
-            return false;
+    if (readFromSeq.is_open()) {
+        s = getCommand(m, f);
+
+        while (s != sEOF) {
+            if (s == "restart") return true;
+
+            s = getCommand(m, f);
+        }
+
+        std::cout << "Sequence file completed." << std::endl;
+    }
+
+    readFromSeq.close();
+
+    s = getCommand(m, f);
+
+    while (s != sEOF) {
+        if (s == "restart") return true;
+
+        s = getCommand(m, f);
     }
 
     // EOF without obtaining a valid input (if any), by default we quit the Game
     return false;
 }
-*/
+
 
 void Subject::attach(Observer* o) {
     // Add the observer pointer to the back of the vector

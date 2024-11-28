@@ -73,7 +73,7 @@ class Game : public Subject {
     // player's turn, and FALSE when EOF is reached. Directly mutates the argument
     // to indicate how many rows the player has cleared on their turn. Also
     // indicates whether the player has lost upon having special actions applied.
-    bool playTurn(int &currTurnRowsCleared, bool &currPlayerLose, std::vector<std::string> specActs);
+    bool playTurn(int &currTurnRowsCleared, bool &currPlayerLose, std::vector<std::string> specActs, bool& gameReset);
     // this method is executed at the very beginning of the game to set up the
     // Boards' initial Blocks properly
     void gameInit();
@@ -128,6 +128,7 @@ class Game : public Subject {
     // Accessors (and settors?)
     int getLevel(int player) const;
     int getScore(int player) const;
+    int getHiScore() const;
     void updateScoreDestroyedBlock(int increase);
 
     int getPlayerTurn() const;

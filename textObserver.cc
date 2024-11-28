@@ -6,6 +6,7 @@ TextObserver::TextObserver(Game *game):game{game}{}
 
 void TextObserver::notify() {
     // Header
+    out << "Hi Score: " << game->getHiScore() << endl << endl;
     out << "Level:    " << game->getLevel(P0_IDX) << "     "
         << "Level:    " << game->getLevel(P1_IDX) << endl;
     out << "Score:    " << game->getScore(P0_IDX) << "     "

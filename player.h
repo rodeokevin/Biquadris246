@@ -20,9 +20,6 @@ class Player {
     std::unique_ptr<ProbsOfLevels> pol;
     std::unique_ptr<Level> l;
 
-    // scoring based on row clearing
-    void scoreRow(int rowsCleared);
-
     public:
         // ctor
         Player(std::string s, int startLevel);
@@ -40,6 +37,8 @@ class Player {
         void restart();
         // end of the player's turn
         bool turnEnd(int rowsCleared);
+        // scoring based on row clearing
+        void scoreRow(int rowsCleared);
         // scoring based on block clearing
         void scoreBlock(int origLvl);
         void offsetScoreBlock(int origLvl);
