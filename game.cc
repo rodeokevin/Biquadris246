@@ -120,10 +120,9 @@ bool Game::addPenalty() {
     else return board1->dropStarBlock(currPlayerPointer);
 }
 
-/*
 // prompts the current player if they cleared more than 1 row this turn to pick
 // one or more special actions, depending on the number of rows cleared
-std::vector<std::string> Game::promptForSpecAct(int rowsCleared) {
+std::vector<std::string> Game::promptForSpecAct(int rowsCleared, bool& isEOF) {
     const int numOfSpecAct = rowsCleared - SPECIAL_ACTION_THRES;
     std::vector<std::string> validInputSpecAct;
 
@@ -137,50 +136,51 @@ std::vector<std::string> Game::promptForSpecAct(int rowsCleared) {
         else
             cout << " special action.\n";
 
-        // listing out the available actions
-        cout << "The available actions are:\t"
-             << "\tblind\n"
-             << "\theavy\n"
-             << "\tforce BLOCK"
-             << ", replace BLOCK by one of I, J, L, O, S, Z, or T\n";
-
         while (validInputSpecAct.size() != numOfSpecAct) {
-            promptValSpecAct(validInputSpecAct);
-            checkDupSpecAct(validInputSpecAct);
+            std::string specActPicked;
+
+            if (readFromSeq.is_open()) {
+                specActPicked = ci->parseSpecAct(readFromSeq);
+
+                if (specActPicked == sEOF) {
+                    readFromSeq.close();
+                    continue;
+                }
+            } else {
+                specActPicked = ci->parseSpecAct(std::cin);
+
+                if (specActPicked == sEOF) {
+                    isEOF = true;
+                    return validInputSpecAct;
+                }
+            }
+
+            if (specActPicked != "") checkDupSpecAct(validInputSpecAct, specActPicked);
         }
     }
 
     return validInputSpecAct;
 }
-*/
 
-/*
-void Game::promptValSpecAct(std::vector<std::string>& specActs) {
-    while (!ci->parseSpecAct(specActs)) {
-        cout << "Invalid special action. Try again.\n";
-    }
-}
-*/
-
-void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
-    bool removedDup = false;
-
-    // looking for duplicates by brute force, luckily there cannot be many special
-    // actions at a time, technically at most 3 since as the tallest block, the
-    // I-block, allows at most 4 rows to be cleared, which is at most 3 special
-    // actions
-    for (auto it1 = specActs.begin(); it1 != specActs.end(); ++it1) {
-        for (auto it2 = std::next(it1, 1); it2 != specActs.end();) {
-            if (*it1 == *it2) {
-                specActs.erase(it2);
-                removedDup = true;
-            } else if ((*it1).size() == 1 && (*it2).size() == 1) {
-                specActs.erase(it2);
-            }
+void Game::checkDupSpecAct(std::vector<std::string>& specActs, std::string toAdd) {
+    // looking for duplicates, only one loop is needed due to how we check for
+    // duplicates when we try to add 'toAdd' onto 'specActs'
+    for (auto specAct : specActs) {
+        // If we have the same special action, then we tell the Player and return
+        // without adding 'toAdd' to 'specActs'. We handle the 'force' special
+        // action not with the 'force' string (like we do with 'blind' and 'heavy'),
+        // but instead we directly specify the Block which the Player wishes to
+        // force, so a duplicate is detected if there is already a string of
+        // length 1 in 'specActs', as 'force' was already given previously.
+        if (specAct == toAdd || (specAct.size() == 1 && toAdd.size() == 1)) {
+            std::cout << "Removed duplicate special actions.\n";
+            return;
         }
     }
 
-    if (removedDup) std::cout << "Removed duplicate special actions.\n";
+    // if we reach here, then 'toAdd' was not a duplicate special action, and we
+    // can add it to the active special actions
+    specActs.push_back(toAdd);
 }
 
 // overall method to play the game, uses helper functions for different parts of
@@ -188,6 +188,7 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs) {
 void Game::play() {
     int currTurnRowsCleared = 0;
     bool currPlayLose = false;
+    bool isEOF = false;
 
     // setting up both Board for the first turn
     gameInit();
@@ -227,7 +228,14 @@ void Game::play() {
                 break;
         }
 
-        // activeSpecActs = promptForSpecAct(currTurnRowsCleared);
+        // due to how we read separately from the input stream when prompting
+        // for special actions, we must make a separate check to see whether we
+        // have reached EOF when trying to obtain special action(s) from the
+        // Player, and if so, we terminate the program instead of going to the
+        // next turn
+        activeSpecActs = promptForSpecAct(currTurnRowsCleared, isEOF);
+
+        if (isEOF) return;
 
         // reset the number of rows cleared for the next player's turn
         currTurnRowsCleared = 0;
@@ -241,6 +249,11 @@ void Game::gameInit() {
     board1->setNewCurrentBlock(createBlock(p1->getBlock()));
     board1->placeBlock();
     board1->setNewNextBlock(createBlock(p1->getBlock()));
+}
+
+std::string Game::getCommand(int& multiplier, std::string& filename) {
+    if (readFromSeq.is_open()) return ci->parseCommand(readFromSeq, multiplier, filename);
+    else return ci->parseCommand(std::cin, multiplier, filename);
 }
 
 // Most of the mechanics for a player's turn. Some of the things done by this
@@ -275,26 +288,33 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     int multiplier = 1;
     std::string filename;
 
-    std::string command = ci->parseCommand(multiplier, filename);
+    std::string command = getCommand(multiplier, filename);
 
     // playing through the turn until we either get EOF or the 'drop' command
     while (!(command == "drop" && multiplier > 0)) {
-        if (command == sEOF) return false;
-        if (command == "") { // If we didn't do anything, don't reprint the board
-            command = ci->parseCommand(multiplier, filename);
+        // if we have finished reading through a given sequence file, we can close
+        // it to indicate that we are returning to reading from standard input,
+        // and continue taking input from the standard input stream
+        if (command == sEOF && readFromSeq.is_open()) {
+            readFromSeq.close();
             continue;
-        }
-
+        // if we do get the EOF string as the returned command, then we can
+        // return false to indicate that we did reach EOF
+        } else if (command == sEOF) return false;
+        // If we didn't do anything, don't reprint the board
+        else if (command == "") {
+            multiplier = 1;
+            command = getCommand(multiplier, filename);
+            continue;
         // in the case where we have the 'restart' command executed, we must
         // break out of the loop, as the Player's turn technically ends before
         // the 'drop' command is made
-        if (command == "restart") {
+        } else if (command == "restart") {
             restart();
             return true;
         } else if (command == "norandom") currPlayerPointer->setNoRand(filename);
         else if (command == "random") currPlayerPointer->setRand();
-        // else if (command == "sequence") {
-        //}
+        else if (command == "sequence") readFromSeq.open(filename);
         else if (command == "levelup") levelUp(currPlayerIdx, multiplier);
         else if (command == "leveldown") levelDown(currPlayerIdx, multiplier);
         
@@ -313,7 +333,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
         // resetting the multiplier
         multiplier = 1;
         // getting the next command
-        command = ci->parseCommand(multiplier, filename);
+        command = getCommand(multiplier, filename);
     }
 
     // once we get here, it means that the drop command was initiated
@@ -321,6 +341,8 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     getBoard()->dropBlock();
 
     rowsCleared = getBoard()->clearFullRows();
+
+    if (rowsCleared > 0) notifyObservers();
 
     return true;
 }

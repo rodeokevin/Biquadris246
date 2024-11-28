@@ -179,10 +179,10 @@ CommandInterpreter::CommandInterpreter() {
 //     }
 // }
 
-string CommandInterpreter::parseCommand(int& multiplier, string& filename) {
+string CommandInterpreter::parseCommand(std::istream& in, int& multiplier, string& filename) {
     string input;
     cout << "Enter command: ";
-    if (!(getline(cin, input))) {
+    if (!(getline(in, input))) {
         std::cout << "End of input detected. Exiting..." << std::endl;
         return "EOF";
     }
@@ -235,10 +235,14 @@ string CommandInterpreter::parseCommand(int& multiplier, string& filename) {
     }
 }
 
-bool CommandInterpreter::parseSpecAct(vector<string>& actions) const {
+std::string CommandInterpreter::parseSpecAct(std::istream& in) const {
     cout << "Choose a special action (blind, heavy, force <blockType>): ";
     string input;
-    getline(cin, input);
+
+    if (!getline(in, input)) {
+        std::cout << "End of input detected. Exiting..." << std::endl;
+        return "EOF";
+    }
 
     // match the three special actions
     std::regex blindPattern("^b(l(i(n(d)?)?)?)?$", std::regex::icase);
@@ -246,27 +250,23 @@ bool CommandInterpreter::parseSpecAct(vector<string>& actions) const {
     std::regex forcePattern("^f(o(r(c(e)?)?)?)?(\\s+(I|J|L|O|S|Z|T))?$", std::regex::icase);
 
     if (regex_match(input, blindPattern)) {
-        actions.push_back("blind");
+        return "blind";
     } else if (regex_match(input, heavyPattern)) {
-        actions.push_back("heavy");
+        return "heavy";
     } else if (regex_match(input, forcePattern)) {
         // extract block type for force
         std::smatch match;
         if (regex_search(input, match, forcePattern)) {
             //
             if (match[7].matched) {
-                string blockType = match[7].str();
-                actions.push_back(blockType);
-                return true;
+                return match[7].str();
             }
         }
         cout << "Invalid block type for 'force'.\n";
-        return false;
+        return "";
     } else {
         // invalid input
         cout << "Invalid special action. No action will be applied.\n";
-        return false;
+        return "";
     }
-
-    return true;
 }

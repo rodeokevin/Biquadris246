@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 #include <iostream>
+#include <fstream>
 #include <memory>
 #include <vector>
 
@@ -51,6 +52,11 @@ class Game : public Subject {
     Player *currPlayerPointer;
     std::unique_ptr<Board> board0, board1;
     std::unique_ptr<CommandInterpreter> ci;
+    // will be open on a file when the user(s) decide to give a text file
+    // containing a sequence of commands, and will be closed when either the file
+    // given has been read completely, or when there was no text file given to
+    // begin with
+    std::ifstream readFromSeq;
 
     // private methods, mechanics to allow our game to run
     void updateHiScore();
@@ -74,6 +80,7 @@ class Game : public Subject {
     // this method is called to update the opponent/next Player's Block, and
     // checks whether it fits onto their Board
     bool updateBlock();
+    std::string getCommand(int& multiplier, std::string& filename);
     bool updateBoard(std::string command, int multiplier, bool& currPlayerLose);
     // Given a command, we check whether we must apply any of the Heavy properties
     // (applies them if needed). Returns True if the current Player's turn has ended,
@@ -96,12 +103,9 @@ class Game : public Subject {
     // the Level and Special Action 'Heavy'
     bool applyHeavy();
     // prompting the player to choose special action(s) depending on 'rowsCleared'
-    std::vector<std::string> promptForSpecAct(int rowsCleared);
-    // obtaining valid input from the player when prompting them for special
-    // action(s)
-    void promptValSpecAct(std::vector<std::string> &validSpecAct);
+    std::vector<std::string> promptForSpecAct(int rowsCleared, bool& isEOF);
     // checking for duplicates for the chosen special actions
-    void checkDupSpecAct(std::vector<std::string> &specActs);
+    void checkDupSpecAct(std::vector<std::string> &specActs, std::string toAdd);
     // Methods relating to the special actions, adding them to a Board and
     // clearing the special actions upon a turn end, as all special actions
     // currently only last one turn for a player. Returns true if adding the

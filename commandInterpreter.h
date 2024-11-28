@@ -19,8 +19,8 @@ class CommandInterpreter {
     CommandInterpreter();
     ~CommandInterpreter() = default;
 
-    string parseCommand(int& multiplier, string& filename);
-    bool parseSpecAct(vector<string>& actions) const;
+    string parseCommand(std::istream& in, int& multiplier, string& filename);
+    std::string parseSpecAct(std::istream& in) const;
 };
 
 #endif
