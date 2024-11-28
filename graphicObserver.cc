@@ -122,11 +122,6 @@ void GraphicObserver::print() {
     for (int i = 0; i < ROWS; ++i) {
         // Grid1
         for (int j = 0; j < COLS; ++j) {
-            /*
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P0_IDX)) {
-                window->fillRectangle((j + GRID1LEFT) * 10, (i + GRIDTOP) * 10, 10, 10, Xwindow::Black);
-            }
-            */
             char c = game->getState(P0_IDX,i,j);
             // If it was the same symbol as before, skip
             if (c == charGrid1[i][j]) {
@@ -166,9 +161,6 @@ void GraphicObserver::print() {
         }
         // Grid2
         for (int j = 0; j < 11; ++j) {
-            if (j >= BLINDL && j <= BLINDR && i >= BLINDT && i <= BLINDB && game->isBoardBlind(P1_IDX)) {
-                window->fillRectangle((j + GRID2LEFT) * 10, (i + GRIDTOP) * 10, 10, 10, Xwindow::Black);
-            }
             char c = game->getState(P1_IDX,i,j);
             // If it was the same symbol as before, skip
             if (c == charGrid2[i][j]) {
