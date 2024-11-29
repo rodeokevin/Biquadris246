@@ -4,6 +4,11 @@
 #include <functional>
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <iostream>
+#include <memory>
+#include <regex>
+#include <sstream>
 
 using namespace std;
 

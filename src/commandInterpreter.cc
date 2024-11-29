@@ -5,8 +5,6 @@
 #include <regex>
 #include <sstream>
 
-#include "block.h"
-
 using namespace std;
 
 const int MAX_LEVEL = 4;
@@ -126,13 +124,16 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename, bool
         // check for commands with multiple arguments or special commands
         if (match == "sequence" || match == "norandom") {
             filename = second;
-        } else if (match == "rename") {
+        } else if (match == "rename" && bonus) {
             try {
                 renameCommand(second, third);
                 std::cout << "Command renamed from \"" << second << "\" to \"" << third << "\"\n";
             } catch (const std::exception& e) {
                 std::cout << e.what() << std::endl;
             }
+        } else if (match == "rename") { 
+            std::cout << "No command found: " << commandName << std::endl;
+            return "";
         } else if (match == "macro" && bonus) {
             if (!createMacro()) {
                 return "EOF";

@@ -11,16 +11,6 @@ Board::Board(): isBlindBoard{false} {
         for (int j = 0; j < COLS; ++j) {
             Tile blankTile{' ', false, nullptr};
             grid[i][j] = blankTile;
-            /*
-            if (j % 2 == 0) {
-                Tile blankTile{'#', false, nullptr};
-                grid[i][j] = blankTile;
-            }
-            else {
-                Tile blankTile{'@', false, nullptr};
-                grid[i][j] = blankTile;
-            }
-            */
         }
     }
 }
