@@ -21,7 +21,7 @@ class CommandInterpreter {
     CommandInterpreter();
     ~CommandInterpreter() = default;
 
-    string parseCommand(std::istream& in, string& filename);
+    string parseCommand(std::istream& in, string& filename, bool bonus);
     std::string parseSpecAct(std::istream& in) const;
 };
 

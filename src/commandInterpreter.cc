@@ -82,7 +82,7 @@ CommandInterpreter::CommandInterpreter() {
     }
 }
 
-string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
+string CommandInterpreter::parseCommand(std::istream& in, string& filename, bool bonus) {
     string input;
 
     if (!(getline(in, input))) {
@@ -133,10 +133,13 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
             } catch (const std::exception& e) {
                 std::cout << e.what() << std::endl;
             }
-        } else if (match == "macro") {
+        } else if (match == "macro" && bonus) {
             if (!createMacro()) {
                 return "EOF";
             }
+            return "";
+        } else if (match == "macro") {
+            std::cout << "No command found: " << commandName << std::endl;
             return "";
         } else if (match == "help") {
             cout << "Available commands:\n";

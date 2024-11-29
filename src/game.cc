@@ -298,10 +298,10 @@ void Game::gameInit() {
 
 std::string Game::getCommand(std::string& filename) {
     if (readFromSeq.is_open())
-        return ci->parseCommand(readFromSeq, filename);
+        return ci->parseCommand(readFromSeq, filename, bonus);
     else {
         std::cout << "Enter command: ";
-        return ci->parseCommand(std::cin, filename);
+        return ci->parseCommand(std::cin, filename, bonus);
     }
 }
 
