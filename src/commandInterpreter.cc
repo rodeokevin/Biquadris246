@@ -89,6 +89,8 @@ string CommandInterpreter::parseCommand(std::istream& in, string& filename) {
         return "EOF";
     }
 
+    if (input == "-bonus") return "bonus";
+
     istringstream iss{input};
     string first, second, third;
     iss >> first >> second >> third;

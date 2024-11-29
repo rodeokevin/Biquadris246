@@ -4,8 +4,8 @@
 
 #include "board.h"
 
-Game::Game(int seed, string seq0, string seq1, int startLevel)
-    : heavySpecAct{false}, hiScore{0}, currPlayerIdx{0}, consec_drop0{0}, consec_drop1{0} {
+Game::Game(bool bonus, int seed, string seq0, string seq1, int startLevel)
+    : bonus{bonus}, heavySpecAct{false}, hiScore{0}, currPlayerIdx{0}, consec_drop0{0}, consec_drop1{0} {
     // setting up the players
     p0 = std::make_unique<Player>(seq0, startLevel);
     p1 = std::make_unique<Player>(seq1, startLevel);
@@ -132,7 +132,12 @@ bool Game::addPenalty() {
 // prompts the current player if they cleared more than 1 row this turn to pick
 // one or more special actions, depending on the number of rows cleared
 std::vector<std::string> Game::promptForSpecAct(int rowsCleared, bool& isEOF) {
-    const int numOfSpecAct = rowsCleared - SPECIAL_ACTION_THRES;
+    int numOfSpecAct;
+
+    if (bonus) numOfSpecAct = rowsCleared - SPECIAL_ACTION_THRES;
+    else if (rowsCleared > 1) numOfSpecAct = 1;
+    else numOfSpecAct = 0;
+
     std::vector<std::string> validInputSpecAct;
 
     if (numOfSpecAct > 0) {
@@ -335,7 +340,18 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     std::string commandSeq = getCommand(filename);
 
     while (true) {
-        if (commandSeq == sEOF && readFromSeq.is_open()) {
+        if (commandSeq == "bonus") {
+            if (bonus) {
+                std::cout << "Enhancements disabled." << std::endl;
+                bonus = false;
+            } else {
+                std::cout << "Enhancements enabled." << std::endl;
+                bonus = true;
+            }
+
+            commandSeq = getCommand(filename);
+            continue;
+        } else if (commandSeq == sEOF && readFromSeq.is_open()) {
             readFromSeq.close();
             std::cout << "Sequence file completed." << std::endl;
             commandSeq = getCommand(filename);

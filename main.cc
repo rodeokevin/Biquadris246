@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
     int seed = 1;
     std::string seq1 = "sequence1.txt", seq2 = "sequence2.txt";
     int startLevel = 0;
+    bool bonus = false;
 
     // iterating through the command line arguments, if any
     int i = 1;
@@ -49,8 +50,10 @@ int main(int argc, char* argv[]) {
                 
                 return 1;
             }
-        } else {
+        } else if (s == "-bonus") bonus = true;
+        else {
             std::cerr << "Invalid command. Valid commands are:\n"
+                      << "\t'-bonus'\n"
                       << "\t'-text'\n"
                       << "\t'-seed SEEDVAL', replace SEEDVAL with a seed value\n"
                       << "\t'-scriptfile1 FILENAME', replace FILENAME with an existing file name\n"
@@ -63,7 +66,7 @@ int main(int argc, char* argv[]) {
         ++i;
     }
 
-    std::unique_ptr<Game> game(new Game{seed, seq1, seq2, startLevel});
+    std::unique_ptr<Game> game(new Game{bonus, seed, seq1, seq2, startLevel});
     std::unique_ptr<Observer> textObs(new TextObserver{game.get()});
     game->attach(textObs.get());
 

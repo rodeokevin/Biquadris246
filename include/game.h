@@ -39,6 +39,8 @@ class Game : public Subject {
     const int HEAVY_LVL_DOWN = 1;
     const int HEAVY_SPEC_ACT_DOWN = 2;
     const int P0_IDX = 0, P1_IDX = 1;
+    // flag that determines whether we should activate the enhancements
+    bool bonus;
     // 'heavySpecAct' is true when the current board has the Heavy special action
     // applied to it
     bool heavySpecAct;
@@ -127,7 +129,7 @@ class Game : public Subject {
     std::shared_ptr<Block> createBlock(const char block);
 
    public:
-    Game(int seed, string seq0, string seq1, int startLevel);  // Ctor
+    Game(bool bonus, int seed, string seq0, string seq1, int startLevel);  // Ctor
 
     // Accessors
     int getLevel(int player) const;
