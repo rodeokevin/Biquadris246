@@ -60,6 +60,8 @@ class Game : public Subject {
     // begin with
     std::ifstream readFromSeq;
 
+    // increments the current Player's points, and updates the hi score if needed
+    void getPoints(int rowsCleared);
     // private methods, mechanics to allow our game to run
     void updateHiScore();
     // Switches Player turn. Before switching also determines whether the current
@@ -127,11 +129,10 @@ class Game : public Subject {
    public:
     Game(int seed, string seq0, string seq1, int startLevel);  // Ctor
 
-    // Accessors (and settors?)
+    // Accessors
     int getLevel(int player) const;
     int getScore(int player) const;
     int getHiScore() const;
-    void updateScoreDestroyedBlock(int increase);
 
     int getPlayerTurn() const;
     Player *getCurrentPlayer() const;

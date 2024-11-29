@@ -42,11 +42,6 @@ int Game::getHiScore() const { return hiScore; }
 
 void Game::updateHiScore() { hiScore = max(hiScore, max(p0->getScore(), p1->getScore())); }
 
-void Game::updateScoreDestroyedBlock(int origLvl) {
-    currPlayerPointer->scoreBlock(origLvl);
-    updateHiScore();
-}
-
 int Game::getPlayerTurn() const {
     return currPlayerIdx;
 }
@@ -198,6 +193,11 @@ void Game::checkDupSpecAct(std::vector<std::string>& specActs, std::string toAdd
     specActs.push_back(toAdd);
 }
 
+void Game::getPoints(int rowsCleared) {
+    currPlayerPointer->scoreRow(rowsCleared);
+    updateHiScore();
+}
+
 // overall method to play the game, uses helper functions for different parts of
 // the game, such as a turn, end of a turn, and so on
 void Game::play() {
@@ -225,7 +225,12 @@ void Game::play() {
         bool playerEndTurn = currPlayerPointer->turnEnd(currTurnRowsCleared);
         bool addingPenaltyCauseLoss = false;
 
-        if (playerEndTurn) addingPenaltyCauseLoss = !addPenalty();
+        if (playerEndTurn) {
+            addingPenaltyCauseLoss = !addPenalty();
+            notifyObservers();
+
+            getPoints(getBoard()->clearFullRows());
+        }
 
         bool switchPlayerCauseLoss = switchPlayerTurn();
         // Two ways the current Player can lose:
@@ -319,8 +324,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
     // directly execute the 'drop' command.
     if (handleConsecDrops()) {
         rowsCleared = getBoard()->clearFullRows();
-        currPlayerPointer->scoreRow(rowsCleared);
-        updateHiScore();
+        getPoints(rowsCleared);
         notifyObservers();
 
         return true;
@@ -362,8 +366,7 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
                 getBoard()->setNewCurrentBlock(nullptr);
 
                 rowsCleared = getBoard()->clearFullRows();
-                currPlayerPointer->scoreRow(rowsCleared);
-                updateHiScore();
+                getPoints(rowsCleared);
 
                 if (rowsCleared > 1) notifyObservers();
 
@@ -391,8 +394,11 @@ bool Game::playTurn(int& rowsCleared, bool& currPlayerLose, std::vector<std::str
             // command. If the multiplier is -1, it means that the player has added
             // a zero multiplier to their command, so we would do nothing regardless
             // of their command
-            else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose))
+            else if (multiplier > 0 && updateBoard(command, multiplier, currPlayerLose)) {
+                rowsCleared = getBoard()->clearFullRows();
+                getPoints(rowsCleared);
                 return true;
+        }
 
             notifyObservers();
         }
