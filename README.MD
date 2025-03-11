@@ -4,6 +4,12 @@
 
 Biquadris is a two-player turn-based Tetris-like game designed as a project for CS246 Fall 2024. Unlike the classic Tetris, Biquadris allows players to take turns strategically placing blocks rather than playing in real-time. The goal is to clear rows by placing tetrominoes efficiently on the board while using special actions to hinder the opponent.
 
+## Key Learnings
+
+- Software Design Principles: Followed OOP principles to implement modular and extensible design patterns to facilitate future enhancements with minimal modifications.
+- C++ skills: Gained experience using smart pointers, templates, and standard containers to improve memory management and code efficiency.
+- UML Modeling: Developed skills in designing complex software architectures using UML diagrams for better visualization and planning.
+
 ## Features
 
 - **Two-player competitive gameplay**
